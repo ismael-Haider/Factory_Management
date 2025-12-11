@@ -12,14 +12,22 @@ import inventory.models.ProductLine;
 
 public class ProductLineService {
     private List<ProductLine> productLines = new ArrayList<>();
+    private TaskService taskService;
 
-    public ProductLineService() {
-        loadProductLines();
+    public ProductLineService(TaskService taskService) {
+        this.taskService = taskService;
+        if (taskService != null) {
+            loadProductLines(taskService);
+        }
+    }
+    
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+        loadProductLines(taskService);
     }
 
     public synchronized void addProductLine(ProductLine productLine) {
         productLines.add(productLine);
-        saveProductLines();
     }
 
     public synchronized Optional<ProductLine> getProductLineById(int id) {
@@ -32,23 +40,17 @@ public class ProductLineService {
 
     public synchronized void updateProductLine(ProductLine updatedProductLine) {
         productLines.replaceAll(pl -> pl.getId() == updatedProductLine.getId() ? updatedProductLine : pl);
-        saveProductLines();
     }
 
-    public synchronized void deleteProductLine(int id) {
-        productLines.removeIf(pl -> pl.getId() == id);
-        saveProductLines();
-    }
-
-    private void loadProductLines() {
+    private void loadProductLines(TaskService taskService) {
         try {
-            productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV);
+            productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV,taskService,this);
         } catch (IOException e) {
             // File might not exist yet
         }
     }
 
-    private void saveProductLines() {
+    public void saveProductLines() {
         try {
             CsvWriter.writeToCsv(Constants.PRODUCT_LINES_CSV, productLines);
         } catch (IOException e) {

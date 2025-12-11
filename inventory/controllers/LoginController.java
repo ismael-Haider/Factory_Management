@@ -31,13 +31,13 @@ public class LoginController {
     }
 
     private void openManagerPage(User user) {
-        System.out.println("wilcom" + user.getUserName());
+        System.out.println("welcome " + user.getUserName());
         // افتح صفحة المدير
         // ManagerDashboard.show();
     }
 
     private void openSupervisorPage(User user) {
-        System.out.println("wilcom" + user.getUserName());
+        System.out.println("welcome " + user.getUserName());
         // افتح صفحة المشرف
         // SupervisorDashboard.show();
     }

@@ -1,10 +1,13 @@
 package inventory.models;
 
 import inventory.models.enums.TaskStatus;
+import inventory.services.ProductLineService;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Task {
+    static int counter=0;
     private int id;
     private int productId; // Links to Product.Id
     private int quantity;
@@ -15,20 +18,26 @@ public class Task {
     private int productLineId; // Links to ProductLine.Id
     private double percentage;
 
-    public Task(int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate, TaskStatus status, int productLineId, double percentage) {
-        this.id = inventory.utils.IdGenerator.generateId(Task.class);
+    public Task(int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate, int productLineId,ProductLineService productLineService) {
+        counter+=1;
+        this.id = inventory.utils.IdGenerator.generateId(Task.class,counter);
         this.productId = productId;
         this.quantity = quantity;
         this.clientName = clientName;
         this.startDate = startDate;
         this.deliveredDate = deliveredDate;
-        this.status = status;
+        this.status = inventory.models.enums.TaskStatus.IN_QUEUE;
         this.productLineId = productLineId;
-        this.percentage = percentage;
+        this.percentage = 0.0;
+        // Only add to product line if it exists
+        if (productLineService != null) {
+            productLineService.getProductLineById(productLineId).ifPresent(pl -> pl.addTask(this.getId()));
+        }
     }
 
     // For loading from CSV
-    public Task(int id, int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate, TaskStatus status, int productLineId, double percentage) {
+    public Task(int id, int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate, TaskStatus status, int productLineId, double percentage,ProductLineService productLineService) {
+        counter+=1;
         this.id = id;
         this.productId = productId;
         this.quantity = quantity;
@@ -38,6 +47,10 @@ public class Task {
         this.status = status;
         this.productLineId = productLineId;
         this.percentage = percentage;
+        // Only add to product line if it exists and productLineService is not null
+        if (productLineService != null) {
+            productLineService.getProductLineById(productLineId).ifPresent(pl -> pl.addTask(this.getId()));
+        }
     }
 
     // Getters and Setters
@@ -75,15 +88,21 @@ public class Task {
         return percentage; }
     public void setPercentage(double percentage) { 
         this.percentage = percentage; }
+    public void addPercentage(double increment) {
+        this.percentage += increment;
+        if (this.percentage > 100.0) {
+            this.percentage = 100.0;
+        }
+    }
 
     // CSV Serialization
     public String toCSV() {
         return id + "," + productId + "," + quantity + "," + clientName + "," + startDate + "," + deliveredDate + "," + status + "," + productLineId + "," + percentage;
     }
 
-    public static Task fromCSV(String csvLine) {
+    public static Task fromCSV(String csvLine,ProductLineService productLineService) {
         String[] parts = csvLine.split(",");
-        return new Task(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), parts[3], LocalDate.parse(parts[4]), LocalDate.parse(parts[5]), TaskStatus.valueOf(parts[6]), Integer.parseInt(parts[7]), Double.parseDouble(parts[8]));
+        return new Task(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), parts[3], LocalDate.parse(parts[4]), LocalDate.parse(parts[5]), TaskStatus.valueOf(parts[6]), Integer.parseInt(parts[7]), Double.parseDouble(parts[8]),productLineService);
     }
 
     @Override

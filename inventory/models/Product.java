@@ -5,18 +5,21 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Product {
+    static int counter=0;
     private int id;
     private String name;
     private Map<Integer, Integer> itemQuantities; // Item ID -> quantity needed
 
     public Product(String name, Map<Integer, Integer> itemQuantities) {
-        this.id = inventory.utils.IdGenerator.generateId(Product.class);
+        counter+=1;
+        this.id = inventory.utils.IdGenerator.generateId(Product.class,counter);
         this.name = name;
         this.itemQuantities = new HashMap<>(itemQuantities);
     }
 
     // For loading from CSV (itemQuantities as "itemId:qty;itemId:qty")
     public Product(int id, String name, String itemQuantitiesStr) {
+        counter+=1;
         this.id = id;
         this.name = name;
         this.itemQuantities = parseItemQuantities(itemQuantitiesStr);

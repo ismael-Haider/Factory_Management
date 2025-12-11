@@ -3,6 +3,7 @@ package inventory.models;
 import java.util.Objects;
 
 public class Item {
+    static int counter=0;
     private int id;
     private String name;
     private String category;
@@ -11,7 +12,9 @@ public class Item {
     private int minQuantity;
 
     public Item(String name, String category, double price, int quantity, int minQuantity) {
-        this.id = inventory.utils.IdGenerator.generateId(Item.class);
+        counter+=1;
+        System.out.println(counter);
+        this.id = inventory.utils.IdGenerator.generateId(Item.class,counter);
         this.name = name;
         this.category = category;
         this.price = price;
@@ -21,6 +24,7 @@ public class Item {
 
     // For loading from CSV
     public Item(int id, String name, String category, double price, int quantity, int minQuantity) {
+        counter+=1;
         this.id = id;
         this.name = name;
         this.category = category;
@@ -39,6 +43,7 @@ public class Item {
     public void setPrice(double price) { this.price = price; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void addQuantity(int quantity) {this.quantity+=quantity;}
     public int getMinQuantity() { return minQuantity; }
     public void setMinQuantity(int minQuantity) { this.minQuantity = minQuantity; }
 
@@ -48,6 +53,7 @@ public class Item {
     }
 
     public static Item fromCSV(String csvLine) {
+        System.out.println(csvLine);
         String[] parts = csvLine.split(",");
         return new Item(Integer.parseInt(parts[0]), parts[1], parts[2], Double.parseDouble(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
     }
