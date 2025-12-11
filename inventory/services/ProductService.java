@@ -31,7 +31,6 @@ public class ProductService {
             }
         }
         products.add(product);
-        saveProducts();
     }
 
     public synchronized Optional<Product> getProductById(int id) {
@@ -44,12 +43,10 @@ public class ProductService {
 
     public synchronized void updateProduct(Product updatedProduct) {
         products.replaceAll(product -> product.getId() == updatedProduct.getId() ? updatedProduct : product);
-        saveProducts();
     }
 
     public synchronized void deleteProduct(int id) {
         products.removeIf(product -> product.getId() == id);
-        saveProducts();
     }
 
     private void loadProducts() {
@@ -60,7 +57,7 @@ public class ProductService {
         }
     }
 
-    private void saveProducts() {
+    public void saveProducts() {
         try {
             CsvWriter.writeToCsv(Constants.PRODUCTS_CSV, products);
         } catch (IOException e) {

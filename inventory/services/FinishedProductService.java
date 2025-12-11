@@ -18,9 +18,7 @@ public class FinishedProductService {
     }
 
     public synchronized void addFinishedProduct(FinishedProduct finishedProduct) {
-        
         finishedProducts.add(finishedProduct);
-        saveFinishedProducts();
     }
 
     public synchronized Optional<FinishedProduct> getFinishedProductByProductId(int productId) {
@@ -33,12 +31,10 @@ public class FinishedProductService {
 
     public synchronized void updateFinishedProduct(FinishedProduct updatedFinishedProduct) {
         finishedProducts.replaceAll(fp -> fp.getProductId() == updatedFinishedProduct.getProductId() ? updatedFinishedProduct : fp);
-        saveFinishedProducts();
     }
 
     public synchronized void deleteFinishedProduct(int productId) {
         finishedProducts.removeIf(fp -> fp.getProductId() == productId);
-        saveFinishedProducts();
     }
 
     public synchronized void reduceQuantity(int productId, int quantity) {
@@ -56,7 +52,7 @@ public class FinishedProductService {
         }
     }
 
-    private void saveFinishedProducts() {
+    public void saveFinishedProducts() {
         try {
             CsvWriter.writeToCsv(Constants.FINISHED_PRODUCTS_CSV, finishedProducts);
         } catch (IOException e) {

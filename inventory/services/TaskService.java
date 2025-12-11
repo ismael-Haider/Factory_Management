@@ -14,14 +14,21 @@ import inventory.models.enums.TaskStatus;
 
 public class TaskService {
     private List<Task> tasks = new ArrayList<>();
+    ProductLineService productLineService;
 
-    public TaskService() {
-        loadTasks();
+    public TaskService(ProductLineService productLineService) {
+        this.productLineService=productLineService;
+        loadTasks(productLineService);
+    }
+    
+    public void setProductLineService(ProductLineService productLineService) {
+        this.productLineService = productLineService;
     }
 
     public synchronized void addTask(Task task) {
         tasks.add(task);
-        saveTasks();
+        //task.setStatus(inventory.models.enums.TaskStatus.IN_QUEUE);
+        // productLineService.getProductLineById(task.getProductLineId()).get().addTask(task.getId()); // add task to product line task.getProductLineId()
     }
 
     public synchronized Optional<Task> getTaskById(int id) {
@@ -34,27 +41,25 @@ public class TaskService {
 
     public synchronized void updateTask(Task updatedTask) {
         tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask : task);
-        saveTasks();
     }
 
     public synchronized void deleteTask(int id) {
         tasks.removeIf(task -> task.getId() == id);
-        saveTasks();
     }
 
     public synchronized List<Task> getTasksByDeliveredDate(LocalDate date) {
         return tasks.stream().filter(task -> task.getDeliveredDate().equals(date) && task.getStatus() == TaskStatus.FINISHED).toList();
     }
 
-    private void loadTasks() {
+    private void loadTasks(ProductLineService productLineService) {
         try {
-            tasks = CsvReader.readTasks(Constants.TASKS_CSV);
+            tasks = CsvReader.readTasks(Constants.TASKS_CSV,productLineService);
         } catch (IOException e) {
             // File might not exist yet
         }
     }
 
-    private void saveTasks() {
+    public void saveTasks() {
         try {
             CsvWriter.writeToCsv(Constants.TASKS_CSV, tasks);
         } catch (IOException e) {

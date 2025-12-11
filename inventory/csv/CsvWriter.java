@@ -2,11 +2,12 @@ package inventory.csv;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 public class CsvWriter {
     public static <T> void writeToCsv(String fileName, List<T> objects) throws IOException {
-        try (FileWriter writer = new FileWriter(fileName)) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName,false),true)) {
             for (T obj : objects) {
                 // Assuming each object has a toCSV() method
                 if (obj instanceof inventory.models.Item) {

@@ -4,20 +4,23 @@ import inventory.models.enums.UserRole;
 import java.util.Objects;
 
 public class User {
+    static int counter=0;
     private int id;
     private String userName;
     private String password;
     private UserRole role; // Default: SUPERVISOR
 
     public User(String userName, String password) {
-        this.id = inventory.utils.IdGenerator.generateId(User.class);
+        counter+=1;
+        this.id = inventory.utils.IdGenerator.generateId(User.class,counter);
         this.userName = userName;
         this.password = password;
         this.role = UserRole.SUPERVISOR; // Default
     }
 
     public User(String userName, String password, UserRole role) {
-        this.id = inventory.utils.IdGenerator.generateId(User.class);
+        counter+=1;
+        this.id = inventory.utils.IdGenerator.generateId(User.class,counter);
         this.userName = userName;
         this.password = password;
         this.role = role;
@@ -25,6 +28,7 @@ public class User {
 
     // For loading from CSV
     public User(int id, String userName, String password, UserRole role) {
+        counter+=1;
         this.id = id;
         this.userName = userName;
         this.password = password;

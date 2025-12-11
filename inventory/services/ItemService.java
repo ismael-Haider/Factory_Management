@@ -17,9 +17,15 @@ public class ItemService {
         loadItems();
     }
 
+    ///kais
     public synchronized void addItem(Item item) {
+        for (Item i : items) {
+            if (item.getName() == i.getName()) {
+                i.addQuantity(item.getQuantity() );
+                return;
+            }
+        }
         items.add(item);
-        saveItems();
     }
 
     public synchronized Optional<Item> getItemById(int id) {
@@ -32,12 +38,10 @@ public class ItemService {
 
     public synchronized void updateItem(Item updatedItem) {
         items.replaceAll(item -> item.getId() == updatedItem.getId() ? updatedItem : item);
-        saveItems();
     }
 
     public synchronized void deleteItem(int id) {
         items.removeIf(item -> item.getId() == id);
-        saveItems();
     }
 
     private void loadItems() {
@@ -48,7 +52,7 @@ public class ItemService {
         }
     }
 
-    private void saveItems() {
+    public void saveItems() {
         try {
             CsvWriter.writeToCsv(Constants.ITEMS_CSV, items);
         } catch (IOException e) {
