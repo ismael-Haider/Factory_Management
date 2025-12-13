@@ -11,46 +11,37 @@ import inventory.csv.CsvWriter;
 import inventory.models.ProductLine;
 
 public class ProductLineService {
-    private List<ProductLine> productLines = new ArrayList<>();
-    private TaskService taskService;
+    private static List<ProductLine> productLines = new ArrayList<>();
 
-    public ProductLineService(TaskService taskService) {
-        this.taskService = taskService;
-        if (taskService != null) {
-            loadProductLines(taskService);
-        }
-    }
-    
-    public void setTaskService(TaskService taskService) {
-        this.taskService = taskService;
-        loadProductLines(taskService);
+    public static void init() {
+        loadProductLines();
     }
 
-    public synchronized void addProductLine(ProductLine productLine) {
+    public static synchronized void addProductLine(ProductLine productLine) {
         productLines.add(productLine);
     }
 
-    public synchronized Optional<ProductLine> getProductLineById(int id) {
+    public static synchronized Optional<ProductLine> getProductLineById(int id) {
         return productLines.stream().filter(pl -> pl.getId() == id).findFirst();
     }
 
-    public synchronized List<ProductLine> getAllProductLines() {
+    public static synchronized List<ProductLine> getAllProductLines() {
         return new ArrayList<>(productLines);
     }
 
-    public synchronized void updateProductLine(ProductLine updatedProductLine) {
+    public static synchronized void updateProductLine(ProductLine updatedProductLine) {
         productLines.replaceAll(pl -> pl.getId() == updatedProductLine.getId() ? updatedProductLine : pl);
     }
 
-    private void loadProductLines(TaskService taskService) {
+    private static void loadProductLines() {
         try {
-            productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV,taskService,this);
+            productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV);
         } catch (IOException e) {
             // File might not exist yet
         }
     }
 
-    public void saveProductLines() {
+    public static void saveProductLines() {
         try {
             CsvWriter.writeToCsv(Constants.PRODUCT_LINES_CSV, productLines);
         } catch (IOException e) {

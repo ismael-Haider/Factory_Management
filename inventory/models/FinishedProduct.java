@@ -19,6 +19,7 @@ public class FinishedProduct {
     public void setName(String name) { this.name = name; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void reduceQuantity(int quantity) { this.quantity -= quantity; }
 
     // CSV Serialization
     public String toCSV() {

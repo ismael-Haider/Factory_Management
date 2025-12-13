@@ -4,40 +4,28 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
-import inventory.controllers.LoginController;
-import inventory.gui.Login;
+import inventory.models.enums.*;
+// import inventory.controllers.LoginController;
+// import inventory.gui.Login;
 import inventory.models.*;
 import inventory.services.*;
 import inventory.threads.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Initialize services - order matters!
-        // 1. First load ProductLines (without TaskService)
-        // 2. Then create TaskService and load Tasks
-        // 3. Then connect TaskService back to ProductLineService
         
-        ItemService itemService = new ItemService();
-        ProductService productService = new ProductService(itemService);
-        FinishedProductService finishedProductService = new FinishedProductService();
-        
-        // Create ProductLineService first and load product lines (without TaskService yet)
-        ProductLineService productLineService = new ProductLineService(null);
-        // productLineService.loadProductLinesWithoutTasks(); // Load product lines from CSV
-        
-        // Then create TaskService with ProductLineService (so tasks can reference product lines)
-        TaskService taskService = new TaskService(productLineService);
-        
-        // Update ProductLineService to reference TaskService for future use
-        productLineService.setTaskService(taskService); // Reload product lines with tasks now that TaskService is available
-        UserService userService = new UserService();
+        // Initialize services in correct order
+        ItemService.init();
+        ProductService.init();
+        FinishedProductService.init();
+        TaskService.init();
+        ProductLineService.init();
+        UserService.init();
         // LoginController loginController = new LoginController(userService);
         // Login loginGui=new Login(loginController);
         // Start threads
-        // TaskProcessor taskProcessor = new TaskProcessor(productLineService, taskService);
-        InventoryUpdater inventoryUpdater = new InventoryUpdater(taskService, finishedProductService,
-                itemService, productService, userService, productLineService);
+        // TaskProcessor taskProcessor = new TaskProcessor();
+        InventoryUpdater inventoryUpdater = new InventoryUpdater();
         // taskProcessor.start();
         inventoryUpdater.start();
 
@@ -63,8 +51,8 @@ public class Main {
         // finishedProductService.addFinishedProduct(fp1);
 
         // // Add sample product line
-        // ProductLine pl1 = new ProductLine("A", ProductLineStatus.RUNNING, 0.8);
-        // productLineService.addProductLine(pl1);
+        // ProductLine pl2 = new ProductLine("B", 2);
+        // ProductLineService.addProductLine(pl2);
 
         // // Add sample task
         // Task task1 = new Task(1, 10, "Client1", LocalDate.now(), LocalDate.now().plusDays(1), TaskStatus.IN_QUEUE, 1, 0.0);
@@ -90,19 +78,19 @@ public class Main {
                 int qty = scanner.nextInt();
                 int minQty = scanner.nextInt();
                 Item newItem = new Item(name, category, price, qty, minQty);
-                itemService.addItem(newItem);
+                ItemService.addItem(newItem);
                 System.out.println("Item added.");
             } else if ("list_items".equals(command)) {
-                itemService.getAllItems().forEach(System.out::println);
+                ItemService.getAllItems().forEach(System.out::println);
             }
             else if("tasks".equals(command)){
-                taskService.getAllTasks().forEach(System.out::println);
+                TaskService.getAllTasks().forEach(System.out::println);
             }
             else if("pro".equals(command)){
-                productLineService.getAllProductLines().forEach(System.out::println);
+                ProductLineService.getAllProductLines().forEach(System.out::println);
             } else if ("add_task".equals(command)){
                 System.out.println("1- new");
-                List<Product> p=productService.getAllProducts();
+                List<Product> p=ProductService.getAllProducts();
                 for (int i=2;i<p.size()+2;i++){
                     System.out.println(i+"- "+ p.get(i-2));
                 }
@@ -119,7 +107,7 @@ public class Main {
                     System.out.println("how many raw meterials do you need:");
                     int n=scanner.nextInt();
                     HashMap<Integer,Integer> hm=new HashMap<>();
-                    List<Item> is=itemService.getAllItems();
+                    List<Item> is=ItemService.getAllItems();
                     for (int i=0;i<n;i++){
                         for (int j=1 ;j<is.size()+1;j++){
                             System.out.println(j+"- "+is.get(j-1));
@@ -129,8 +117,12 @@ public class Main {
                     }
                     System.out.println("enter the quantity of the product:");
                     int q=scanner.nextInt();
-                    productService.addProduct(new Product(name, hm));
-                    taskService.addTask(new Task(productService.getAllProducts().getLast().getId(),q,"client_bitch",LocalDate.now(),LocalDate.now().plusDays(1),1,productLineService));
+                    ProductService.addProduct(new Product(name, hm));
+                    List<Product> all = ProductService.getAllProducts();
+                    int lastId = all.get(all.size()-1).getId();
+                    System.out.println("what is the id of the product line you want to add the task to?");
+                    int plid=scanner.nextInt();
+                    TaskService.addTask(new Task(lastId,q,"client_bitch",LocalDate.now(),LocalDate.now().plusDays(1),plid));
                 }
                 else {
                     int c=Integer.parseInt(command)-1;
@@ -148,23 +140,25 @@ public class Main {
                     }
                     System.out.println("enter the quantity of the product:");
                     int q=scanner.nextInt();
-                    taskService.addTask(new Task(pr.getId(),q ,"client_bitch",LocalDate.now(),LocalDate.now().plusDays(1),1,productLineService));
+                    System.out.println("what is the id of the product line you want to add the task to?");
+                    int plid=scanner.nextInt();
+                    TaskService.addTask(new Task(pr.getId(),q ,"client_bitch",LocalDate.now(),LocalDate.now().plusDays(1),plid));
                 }
             } else if ("exit".equals(command)) {
                 // taskProcessor.stopProcessing();
                 inventoryUpdater.stopUpdating();
-                productLineService.getAllProductLines().forEach(pl-> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
+                ProductLineService.getAllProductLines().forEach(pl-> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
                 break;
             }
         }
 
         scanner.close();
-        taskService.saveTasks();
-        finishedProductService.saveFinishedProducts();
-        itemService.saveItems();
-        productLineService.saveProductLines();
-        productService.saveProducts();
-        userService.saveUsers();
+        TaskService.saveTasks();
+        FinishedProductService.saveFinishedProducts();
+        ItemService.saveItems();
+        ProductLineService.saveProductLines();
+        ProductService.saveProducts();
+        UserService.saveUsers();
         System.exit(0);
 
     }

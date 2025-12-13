@@ -12,38 +12,38 @@ import inventory.models.User;
 import inventory.models.enums.UserRole;
 
 public class UserService {
-    private List<User> users = new ArrayList<>();
+    private static List<User> users = new ArrayList<>();
 
-    public UserService() {
+    public static void init() {
         loadUsers();
     }
 
-    public synchronized void addUser(User user) {
+    public static synchronized void addUser(User user) {
         users.add(user);
     }
 
-    public synchronized Optional<User> getUserById(int id) {
+    public static synchronized Optional<User> getUserById(int id) {
         return users.stream().filter(user -> user.getId() == id).findFirst();
     }
 
-    public synchronized List<User> getAllUsers() {
+    public static synchronized List<User> getAllUsers() {
         return new ArrayList<>(users);
     }
 
-    public synchronized void updateUser(User updatedUser) {
+    public static synchronized void updateUser(User updatedUser) {
         users.replaceAll(user -> user.getId() == updatedUser.getId() ? updatedUser : user);
     }
 
-    public synchronized void deleteUser(int id) {
+    public static synchronized void deleteUser(int id) {
         users.removeIf(user -> user.getId() == id);
     }
 
     // Authenticate user (for login simulation)
-    public synchronized Optional<User> authenticate(String userName, String password) {
+    public static synchronized Optional<User> authenticate(String userName, String password) {
         return users.stream().filter(user -> user.getUserName().equals(userName) && user.getPassword().equals(password)).findFirst();
     }
 
-    private Boolean loadUsers() {
+    private static Boolean loadUsers() {
         try {
             users = CsvReader.readUsers(Constants.USERS_CSV);
             // Ensure at least one manager exists (as per your spec)
@@ -68,7 +68,7 @@ public class UserService {
         
     }
 
-    public void saveUsers() {
+    public static void saveUsers() {
         try {
             CsvWriter.writeToCsv(Constants.USERS_CSV, users);
         } catch (IOException e) {

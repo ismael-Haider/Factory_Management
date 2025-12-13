@@ -13,19 +13,17 @@ import inventory.csv.CsvWriter;
 import inventory.models.Product;
 
 public class ProductService {
-    private List<Product> products = new ArrayList<>();
-    private ItemService itemService; // To validate item IDs
+    private static List<Product> products = new ArrayList<>();
 
-    public ProductService(ItemService itemService) {
-        this.itemService = itemService;
+    public static void init() {
         loadProducts();
     }
 
-    public synchronized void addProduct(Product product) {
-        // Prompt for item quantities (simulate user input)
+    public static synchronized void addProduct(Product product) {
+        // Validate item IDs using static ItemService
         Map<Integer, Integer> itemQuantities = product.getItemQuantities();
         for (Integer itemId : itemQuantities.keySet()) {
-            if (itemService.getItemById(itemId).isEmpty()) {
+            if (ItemService.getItemById(itemId).isEmpty()) {
                 System.out.println("Invalid item ID: " + itemId);
                 return;
             }
@@ -33,23 +31,23 @@ public class ProductService {
         products.add(product);
     }
 
-    public synchronized Optional<Product> getProductById(int id) {
+    public static synchronized Optional<Product> getProductById(int id) {
         return products.stream().filter(product -> product.getId() == id).findFirst();
     }
 
-    public synchronized List<Product> getAllProducts() {
+    public static synchronized List<Product> getAllProducts() {
         return new ArrayList<>(products);
     }
 
-    public synchronized void updateProduct(Product updatedProduct) {
+    public static synchronized void updateProduct(Product updatedProduct) {
         products.replaceAll(product -> product.getId() == updatedProduct.getId() ? updatedProduct : product);
     }
 
-    public synchronized void deleteProduct(int id) {
+    public static synchronized void deleteProduct(int id) {
         products.removeIf(product -> product.getId() == id);
     }
 
-    private void loadProducts() {
+    private static void loadProducts() {
         try {
             products = CsvReader.readProducts(Constants.PRODUCTS_CSV);
         } catch (IOException e) {
@@ -57,7 +55,7 @@ public class ProductService {
         }
     }
 
-    public void saveProducts() {
+    public static void saveProducts() {
         try {
             CsvWriter.writeToCsv(Constants.PRODUCTS_CSV, products);
         } catch (IOException e) {

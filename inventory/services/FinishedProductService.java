@@ -11,40 +11,52 @@ import inventory.csv.CsvWriter;
 import inventory.models.FinishedProduct;
 
 public class FinishedProductService {
-    private List<FinishedProduct> finishedProducts = new ArrayList<>();
+    private static List<FinishedProduct> finishedProducts = new ArrayList<>();
 
-    public FinishedProductService() {
+    // Call once at startup
+    public static void init() {
         loadFinishedProducts();
     }
 
-    public synchronized void addFinishedProduct(FinishedProduct finishedProduct) {
+    public static synchronized void addFinishedProduct(FinishedProduct finishedProduct) {
         finishedProducts.add(finishedProduct);
     }
 
-    public synchronized Optional<FinishedProduct> getFinishedProductByProductId(int productId) {
+    public static synchronized void addFinishedProduct(int productId ,int quantity) {
+        FinishedProduct finishedProduct = getFinishedProductByProductId(productId).orElse(null);
+        if (finishedProduct != null) {
+            finishedProduct.setQuantity(finishedProduct.getQuantity() + quantity);
+            updateFinishedProduct(finishedProduct);
+            return;
+        }
+        finishedProduct = new FinishedProduct(productId,ProductService.getProductById(productId).get().getName(), quantity);
+        finishedProducts.add(finishedProduct);
+    }
+    
+    public static synchronized Optional<FinishedProduct> getFinishedProductByProductId(int productId) {
         return finishedProducts.stream().filter(fp -> fp.getProductId() == productId).findFirst();
     }
 
-    public synchronized List<FinishedProduct> getAllFinishedProducts() {
+    public static synchronized List<FinishedProduct> getAllFinishedProducts() {
         return new ArrayList<>(finishedProducts);
     }
 
-    public synchronized void updateFinishedProduct(FinishedProduct updatedFinishedProduct) {
+    public static synchronized void updateFinishedProduct(FinishedProduct updatedFinishedProduct) {
         finishedProducts.replaceAll(fp -> fp.getProductId() == updatedFinishedProduct.getProductId() ? updatedFinishedProduct : fp);
     }
 
-    public synchronized void deleteFinishedProduct(int productId) {
+    public static synchronized void deleteFinishedProduct(int productId) {
         finishedProducts.removeIf(fp -> fp.getProductId() == productId);
     }
 
-    public synchronized void reduceQuantity(int productId, int quantity) {
+    public static synchronized void reduceQuantity(int productId, int quantity) {
         getFinishedProductByProductId(productId).ifPresent(fp -> {
-            fp.setQuantity(fp.getQuantity() - quantity);
+            fp.reduceQuantity(quantity);
             updateFinishedProduct(fp);
         });
     }
 
-    private void loadFinishedProducts() {
+    private static void loadFinishedProducts() {
         try {
             finishedProducts = CsvReader.readFinishedProducts(Constants.FINISHED_PRODUCTS_CSV);
         } catch (IOException e) {
@@ -52,7 +64,7 @@ public class FinishedProductService {
         }
     }
 
-    public void saveFinishedProducts() {
+    public static void saveFinishedProducts() {
         try {
             CsvWriter.writeToCsv(Constants.FINISHED_PRODUCTS_CSV, finishedProducts);
         } catch (IOException e) {

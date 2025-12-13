@@ -11,14 +11,14 @@ import inventory.csv.CsvWriter;
 import inventory.models.Item;
 
 public class ItemService {
-    private List<Item> items = new ArrayList<>();
+    private static List<Item> items = new ArrayList<>();
 
-    public ItemService() {
+    public static void init() {
         loadItems();
     }
 
     ///kais
-    public synchronized void addItem(Item item) {
+    public static synchronized void addItem(Item item) {
         for (Item i : items) {
             if (item.getName() == i.getName()) {
                 i.addQuantity(item.getQuantity() );
@@ -28,23 +28,23 @@ public class ItemService {
         items.add(item);
     }
 
-    public synchronized Optional<Item> getItemById(int id) {
+    public static synchronized Optional<Item> getItemById(int id) {
         return items.stream().filter(item -> item.getId() == id).findFirst();
     }
 
-    public synchronized List<Item> getAllItems() {
+    public static synchronized List<Item> getAllItems() {
         return new ArrayList<>(items);
     }
 
-    public synchronized void updateItem(Item updatedItem) {
+    public static synchronized void updateItem(Item updatedItem) {
         items.replaceAll(item -> item.getId() == updatedItem.getId() ? updatedItem : item);
     }
 
-    public synchronized void deleteItem(int id) {
+    public static synchronized void deleteItem(int id) {
         items.removeIf(item -> item.getId() == id);
     }
 
-    private void loadItems() {
+    private static void loadItems() {
         try {
             items = CsvReader.readItems(Constants.ITEMS_CSV);
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public class ItemService {
         }
     }
 
-    public void saveItems() {
+    public static void saveItems() {
         try {
             CsvWriter.writeToCsv(Constants.ITEMS_CSV, items);
         } catch (IOException e) {
