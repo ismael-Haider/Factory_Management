@@ -1,8 +1,6 @@
 package inventory.models;
 
 import inventory.models.enums.ProductLineStatus;
-import inventory.services.ProductLineService;
-import inventory.services.TaskService;
 import inventory.threads.ProductionLine_thread;
 
 import java.util.LinkedList;
@@ -17,31 +15,28 @@ public class ProductLine {
     private ProductLineStatus status;
     private double efficiency;
     private Queue<Integer> taskQueue; // Task IDs
-    ProductLineService productLineService;
     ProductionLine_thread productionLine_thread;
 
-    public ProductLine(String name, ProductLineStatus status, double efficiency,TaskService taskService,ProductLineService productLineService) {
+    public ProductLine(String name, double efficiency) {
         counter+=1;
         this.id = inventory.utils.IdGenerator.generateId(ProductLine.class,counter);
         this.name = name;
-        this.status = status;
+        this.status = ProductLineStatus.STOP;
         this.efficiency = efficiency;
         this.taskQueue = new LinkedList<>();
-        this.productLineService=productLineService;
-        this.productionLine_thread = new ProductionLine_thread(this,productLineService,taskService);
+        this.productionLine_thread = new ProductionLine_thread(this);
         this.productionLine_thread.start();
     }
 
     // For loading from CSV (taskQueue as "id1,id2,id3")
-    public ProductLine(int id, String name, ProductLineStatus status, double efficiency, String taskQueueStr,TaskService taskService,ProductLineService productLineService) {
+    public ProductLine(int id, String name, ProductLineStatus status, double efficiency, String taskQueueStr) {
         counter+=1;
         this.id = id;
         this.name = name;
         this.status = status;
         this.efficiency = efficiency;
         this.taskQueue = parseTaskQueue(taskQueueStr);
-        this.productLineService=productLineService;
-        this.productionLine_thread = new ProductionLine_thread(this,productLineService,taskService);
+        this.productionLine_thread = new ProductionLine_thread(this);
         this.productionLine_thread.start();
     }
 
@@ -67,9 +62,10 @@ public class ProductLine {
     public Integer pollTask() { return taskQueue.poll(); } // Remove and return next task
     public Integer peekTask() { return taskQueue.peek(); }
     public boolean isQueueEmpty() { return taskQueue.isEmpty(); }
-    public void setThread(ProductionLine_thread productionLine_thread){
-        this.productionLine_thread=productionLine_thread;
-    }
+    public void setThread(ProductionLine_thread productionLine_thread){this.productionLine_thread=productionLine_thread;}
+    public void start(){setStatus(ProductLineStatus.RUNNING);}
+    public void stop(){setStatus(ProductLineStatus.STOP);}
+    public void removeTask(int taskId){taskQueue.remove(taskId);}
 
     // CSV Serialization
     public String toCSV() {
@@ -81,9 +77,9 @@ public class ProductLine {
         return id + "," + name + "," + status + "," + efficiency + "," + sb.toString();
     }
 
-    public static ProductLine fromCSV(String csvLine,TaskService taskService,ProductLineService productLineService) {
+    public static ProductLine fromCSV(String csvLine) {
         String[] parts = csvLine.split(",", 5);
-        return new ProductLine(Integer.parseInt(parts[0]), parts[1], ProductLineStatus.valueOf(parts[2]), Double.parseDouble(parts[3]), parts.length > 4 ? parts[4] : "",taskService,productLineService);
+        return new ProductLine(Integer.parseInt(parts[0]), parts[1], ProductLineStatus.valueOf(parts[2]), Double.parseDouble(parts[3]), parts.length > 4 ? parts[4] : "");
     }
 
     @Override

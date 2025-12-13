@@ -6,16 +6,13 @@ import inventory.models.enums.UserRole;
 
 public class LoginController {
 
-    private UserService userService;
-
-    public LoginController(UserService userService) {
-        this.userService = userService;
+    public LoginController() {
     }
 
     public Boolean login(String username, String password) {
 
         // محاكاة محاولة تسجيل الدخول
-        userService.authenticate(username, password).ifPresentOrElse(user -> {
+        UserService.authenticate(username, password).ifPresentOrElse(user -> {
             // التحقق من نوع المستخدم
             if (user.getRole() == UserRole.MANAGER) {
                 openManagerPage(user);

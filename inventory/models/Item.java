@@ -44,6 +44,7 @@ public class Item {
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public void addQuantity(int quantity) {this.quantity+=quantity;}
+    public void reduceQuantity(int quantity) {this.quantity-=quantity;}
     public int getMinQuantity() { return minQuantity; }
     public void setMinQuantity(int minQuantity) { this.minQuantity = minQuantity; }
 

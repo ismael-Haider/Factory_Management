@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import inventory.services.ProductLineService;
-import inventory.services.TaskService;
+ 
 
 public class CsvReader {
     public static List<inventory.models.Item> readItems(String fileName) throws IOException {
@@ -43,23 +42,23 @@ public class CsvReader {
         return finishedProducts;
     }
 
-    public static List<inventory.models.Task> readTasks(String fileName,ProductLineService productLineService) throws IOException {
+    public static List<inventory.models.Task> readTasks(String fileName) throws IOException {
         List<inventory.models.Task> tasks = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                tasks.add(inventory.models.Task.fromCSV(line,productLineService));
+                tasks.add(inventory.models.Task.fromCSV(line));
             }
         }
         return tasks;
     }
 
-    public static List<inventory.models.ProductLine> readProductLines(String fileName,TaskService taskService,ProductLineService productLineService) throws IOException {
+    public static List<inventory.models.ProductLine> readProductLines(String fileName) throws IOException {
         List<inventory.models.ProductLine> productLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                productLines.add(inventory.models.ProductLine.fromCSV(line,taskService,productLineService));
+                productLines.add(inventory.models.ProductLine.fromCSV(line));
             }
         }
         return productLines;

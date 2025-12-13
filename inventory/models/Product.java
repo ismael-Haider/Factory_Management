@@ -39,7 +39,7 @@ public class Product {
     public int getId() { return id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public Map<Integer, Integer> getItemQuantities() { return new HashMap<>(itemQuantities); }
+    public HashMap<Integer, Integer> getItemQuantities() { return new HashMap<>(itemQuantities); }
     public void setItemQuantities(Map<Integer, Integer> itemQuantities) { this.itemQuantities = new HashMap<>(itemQuantities); }
 
     // CSV Serialization
