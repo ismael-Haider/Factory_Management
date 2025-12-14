@@ -67,6 +67,11 @@ public class Item {
         return id == item.id;
     }
 
+    public boolean isLow(){
+        return quantity<=minQuantity;
+    }
+
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
