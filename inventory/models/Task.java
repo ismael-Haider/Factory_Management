@@ -16,6 +16,7 @@ public class Task {
     private TaskStatus status;
     private int productLineId; // Links to ProductLine.Id
     private double percentage;
+    private boolean delivered;
 
     public Task(int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate,
             int productLineId) {
@@ -29,6 +30,7 @@ public class Task {
         this.status = inventory.models.enums.TaskStatus.IN_QUEUE;
         this.productLineId = productLineId;
         this.percentage = 0.0;
+        this.delivered=false;
         // Try to add to product line if it exists
         inventory.services.ProductLineService.getProductLineById(productLineId)
                 .ifPresent(pl -> pl.addTask(this.getId()));
@@ -36,7 +38,7 @@ public class Task {
 
     // For loading from CSV
     public Task(int id, int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate,
-            TaskStatus status, int productLineId, double percentage) {
+            TaskStatus status, int productLineId, double percentage,boolean delivered) {
         counter += 1;
         this.id = id;
         this.productId = productId;
@@ -47,6 +49,7 @@ public class Task {
         this.status = status;
         this.productLineId = productLineId;
         this.percentage = percentage;
+        this.delivered=delivered;
         // When loading from CSV we don't re-add to the product line queue
         // (the product line's CSV already contains the queue)
     }
@@ -130,18 +133,23 @@ public class Task {
             this.percentage = 100.0;
         }
     }
-
+    public boolean isDelivered(){
+        return this.delivered;
+    }
+    public void setDelivered(boolean delivered){
+        this.delivered=delivered;
+    }
     // CSV Serialization
     public String toCSV() {
         return id + "," + productId + "," + quantity + "," + clientName + "," + startDate + "," + deliveredDate + ","
-                + status + "," + productLineId + "," + percentage;
+                + status + "," + productLineId + "," + percentage+","+delivered;
     }
 
     public static Task fromCSV(String csvLine) {
         String[] parts = csvLine.split(",");
         return new Task(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), parts[3],
                 LocalDate.parse(parts[4]), LocalDate.parse(parts[5]), TaskStatus.valueOf(parts[6]),
-                Integer.parseInt(parts[7]), Double.parseDouble(parts[8]));
+                Integer.parseInt(parts[7]), Double.parseDouble(parts[8]),Boolean.parseBoolean(parts[9]));
     }
 
     @Override

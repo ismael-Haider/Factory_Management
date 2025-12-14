@@ -24,6 +24,7 @@ public class TaskService {
     public static synchronized void finishTask(int id) {
         getTaskById(id).ifPresent(task -> {
             task.setStatus(TaskStatus.FINISHED);
+            System.out.println(task.getStatus());
             updateTask(task);
             FinishedProductService.addFinishedProduct(task.getProductId(), task.getQuantity());
         });
@@ -45,6 +46,7 @@ public class TaskService {
     }
 
     public static synchronized void addTask(Task task) {
+        tasks.add(task);
         List<Task> cancelled=tasks.stream().filter(t->t.getStatus()==TaskStatus.CANCELLED&&t.getProductId()==task.getProductId()&&t.getPercentage()>0).toList();
         if (cancelled.size()>0){
             double q=0;
@@ -59,24 +61,25 @@ public class TaskService {
             }
         }
         
-        if (task.getQuantity()<=0){
+        if (task.getPercentage()==100){
             finishTask(task.getId());
+            System.out.println("hi");
             ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
             
-            tasks.add(task);
+            
             return;
         }
         HashMap <Integer, Integer> items=ProductService.getProductById(task.getProductId()).get().getItemQuantities();
         for (Integer i: items.keySet()){
             ItemService.getItemById(i).get().reduceQuantity((int)(items.get(i)*task.getQuantity()*(100-task.getPercentage())/100.0));
         }
-        tasks.add(task);
         // task.setStatus(inventory.models.enums.TaskStatus.IN_QUEUE);
         // productLineService.getProductLineById(task.getProductLineId()).get().addTask(task.getId());
         // // add task to product line task.getProductLineId()
     }
 
     public static synchronized Optional<Task> getTaskById(int id) {
+        System.out.println("aghiad"+id);
         return tasks.stream().filter(task -> task.getId() == id).findFirst();
     }
 

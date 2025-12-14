@@ -26,8 +26,9 @@ public class InventoryUpdater extends Thread {
                 // Find finished tasks with today's delivered date
                 TaskService.getTasksByDeliveredDate(today).forEach(task -> {
                     // Reduce quantity from finished products
-                    if (task.getStatus() == TaskStatus.FINISHED){
+                    if (task.getStatus() == TaskStatus.FINISHED&&!task.isDelivered()){
                         FinishedProductService.reduceQuantity(task.getProductId(), task.getQuantity());
+                        task.setDelivered(true);
                         if (FinishedProductService.getFinishedProductByProductId(task.getProductId()).get().getQuantity() <= 0){
                             FinishedProductService.deleteFinishedProduct(task.getProductId());
                         }
