@@ -159,13 +159,16 @@ public class ProLineManageController {
     }
 
     public void save() {
-        ItemService.saveItems();
-        ProductService.saveProducts();
-        ProductLineService.saveProductLines();
         TaskService.saveTasks();
+        FinishedProductService.saveFinishedProducts();
+        ItemService.saveItems();
+        ProductLineService.saveProductLines();
+        ProductService.saveProducts();
+        UserService.saveUsers();
     }
     public void exit() {
         save();
+        ProductLineService.getAllProductLines().forEach(pl-> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
         System.exit(0);
     }
 
