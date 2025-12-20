@@ -107,10 +107,16 @@ public class InvenManageController {
     }
 
     public void saveItems() {
+        TaskService.saveTasks();
+        FinishedProductService.saveFinishedProducts();
         ItemService.saveItems();
+        ProductLineService.saveProductLines();
+        ProductService.saveProducts();
+        UserService.saveUsers();
     }
         public void exit() {
         saveItems();
+        ProductLineService.getAllProductLines().forEach(pl-> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
         System.exit(0);
     }
 }
