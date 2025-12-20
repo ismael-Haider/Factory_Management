@@ -1,0 +1,116 @@
+package inventory.controllers;
+
+import inventory.models.*;
+import inventory.services.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class InvenManageController {
+
+    public InvenManageController() {
+
+    }
+
+    public void add_item(String name, String category, double price, int quantity, int minQuantity) {
+        name = name.toLowerCase();
+        category = category.toLowerCase();
+        ItemService.addItem(new Item(name, category, price, quantity, minQuantity));
+    }
+
+    public List<Item> view_items() {
+        return ItemService.getAllItems();
+    }
+
+    public void update_item(int id, String name, String category, double price, int quantity, int minQuantity) {
+        Item item = ItemService.getItemById(id).orElse(null);
+        if (item==null){
+            // /////////////////////////////////////////////////////////////////errorororororororororororororororororororororororororoor
+            return;
+        }
+        if (!name.equals(item.getName()))
+            item.setName(name);
+        if (!category.equals(item.getCategory()))
+            item.setCategory(category);
+        if (price != item.getPrice()){
+            item.setPrice(price);}
+        if (quantity != item.getQuantity())
+            item.setQuantity(quantity);
+        if (minQuantity != item.getMinQuantity())
+            item.setMinQuantity(minQuantity);
+    }
+
+    public void delete_item(int id) {
+        ItemService.deleteItem(id);
+    }
+
+    public List<Item> searchByName(String name) {
+        List<Item> items = ItemService.getAllItems();
+        List<Item> newItem = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getName().equalsIgnoreCase(name)) {
+                newItem.add(item);
+            }
+        }
+        return newItem;
+    }
+
+    public List<Item> searchByCategory(String category) {
+        List<Item> items = ItemService.getAllItems();
+        List<Item> newItem = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getCategory().equalsIgnoreCase(category)) {
+                newItem.add(item);
+            }
+        }
+        return newItem;
+    }
+
+    public List<Item> availableItems() {
+
+        List<Item> items = ItemService.getAllItems();
+        List<Item> newItem = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getQuantity() >= item.getMinQuantity()) {
+                newItem.add(item);
+            }
+        }
+
+        return newItem;
+
+    }
+
+    public List<Item> runOutItems() {
+
+        List<Item> items = ItemService.getAllItems();
+        List<Item> newItem = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getQuantity() == 0) {
+                newItem.add(item);
+            }
+        }
+
+        return newItem;
+
+    }
+
+    public List<Item> unAvailableItems() {
+
+        List<Item> items = ItemService.getAllItems();
+        List<Item> newItem = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getQuantity() < item.getMinQuantity()) {
+                newItem.add(item);
+            }
+        }
+        return newItem;
+
+    }
+
+    public void saveItems() {
+        ItemService.saveItems();
+    }
+        public void exit() {
+        saveItems();
+        System.exit(0);
+    }
+}

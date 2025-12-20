@@ -31,6 +31,10 @@ public class ItemService {
     public static synchronized Optional<Item> getItemById(int id) {
         return items.stream().filter(item -> item.getId() == id).findFirst();
     }
+    public static synchronized Optional<Item> getItemByName(String name) {
+        return items.stream().filter(item -> item.getName().equals(name)).findFirst();
+    }
+
 
     public static synchronized List<Item> getAllItems() {
         return new ArrayList<>(items);

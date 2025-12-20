@@ -16,6 +16,13 @@ public class ProLineManageController {
         Task newTask = new Task(productId, quantity, clientName, startDate, deliveredDate, productLineId);
         TaskService.addTask(newTask);
     }
+    public void addTask(String name, HashMap<Integer, Integer> itemQuantities, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate,
+            int productLineId, ProductLineService productLineService) {
+        addProduct(name,itemQuantities );
+        clientName = clientName.toLowerCase();
+        Task newTask = new Task(ProductService.getAllProducts().getLast().getId(), quantity, clientName, startDate, deliveredDate, productLineId);
+        TaskService.addTask(newTask);
+    }
 
     public boolean cancelTask(int id) {
         Task task = TaskService.getTaskById(id).get();
@@ -67,7 +74,7 @@ public class ProLineManageController {
         return newList;
     }
 
-    public List<Task> viewTAsksByProductId(int productId) {
+    public List<Task> viewTasksByProductId(int productId) {
         List<Task> allTasks = TaskService.getAllTasks();
         List<Task> newList = new ArrayList<>();
         for (Task t : allTasks)
@@ -86,7 +93,7 @@ public class ProLineManageController {
     }
 
     public List<ProductLine> viewProductLinesByProductId(int productId) {
-        List<Task> tasks = viewTAsksByProductId(productId);
+        List<Task> tasks = viewTasksByProductId(productId);
         List<ProductLine> newList = new ArrayList<>();
         for (Task t : tasks) {
             ProductLine pl = ProductLineService.getProductLineById(t.getProductLineId()).get();
@@ -96,39 +103,40 @@ public class ProLineManageController {
         return newList;
     }
 
-    public List<Product> viewProductsByProductLineId(int productLineId) {
+    public List<FinishedProduct> viewFinishedProductsByProductLineId(int productLineId) {
         List<Task> tasks = viewTasksByProductLine(productLineId);
-        List<Product> newList = new ArrayList<>();
+        List<FinishedProduct> newList = new ArrayList<>();
         for (Task t : tasks) {
-            Product p = ProductService.getProductById(t.getProductId()).get();
-            if (!newList.contains(p))
-                newList.add(p);
+            FinishedProduct fp = FinishedProductService.getFinishedProductByProductId(t.getProductId()).get();
+            if (!newList.contains(fp))
+                newList.add(fp);
         }
         return newList;
     }
 
-    public HashMap<String, List<String>> viewAllProductAndProductLines() {
-        HashMap<String, List<String>> map = new HashMap<>();
+    public HashMap<ProductLine, List<FinishedProduct>> viewAllProductAndProductLines() {
+        HashMap<ProductLine, List<FinishedProduct>> map = new HashMap<>();
         List<ProductLine> productLines = ProductLineService.getAllProductLines();
         for (ProductLine pl : productLines) {
-            List<String> productsInLine = new ArrayList<>();
+            List<FinishedProduct> fininshedproductsInLine = new ArrayList<>();
             List<Task> tasks = viewTasksByProductLine(pl.getId());
             for (Task t : tasks) {
-                Product p = ProductService.getProductById(t.getProductId()).get();
-                if (!productsInLine.contains(p.getName()))
-                    productsInLine.add(p.getName());
+                FinishedProduct p = FinishedProductService.getFinishedProductByProductId(t.getProductId()).get();
+                if (!fininshedproductsInLine.contains(p))
+                    fininshedproductsInLine.add(p);
             }
-            map.put(pl.getName(), productsInLine);
+            if (!fininshedproductsInLine.isEmpty())
+                map.put(pl, fininshedproductsInLine);
         }
         return map;
     }
 
     public Product viewTheMostRequestedProduct(LocalDate fld, LocalDate lld) {
-        List<Task> allTAsk = TaskService.getAllTasks();
+        List<Task> allTask = TaskService.getAllTasks();
         List<Integer> ids = new ArrayList<>();
-        for (Task t : allTAsk) {
+        for (Task t : allTask) {
             if (t.getStartDate().isBefore(fld) || t.getDeliveredDate().isAfter(lld)) {
-                allTAsk.remove(t);
+                allTask.remove(t);
             } else {
                 ids.add(t.getProductId());
             }
@@ -137,7 +145,7 @@ public class ProLineManageController {
         int mostRequestedId = -1;
         for (int id : ids) {
             int count = 0;
-            for (Task t : allTAsk) {
+            for (Task t : allTask) {
                 if (t.getProductId() == id) {
                     count++;
                 }
@@ -161,9 +169,5 @@ public class ProLineManageController {
         System.exit(0);
     }
 
-    public boolean deleteTask(int taskId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteTask'");
-    }
 
 }

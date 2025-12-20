@@ -19,7 +19,7 @@ public class Product {
 
     // For loading from CSV (itemQuantities as "itemId:qty;itemId:qty")
     public Product(int id, String name, String itemQuantitiesStr) {
-        counter+=1;
+        counter=id;
         this.id = id;
         this.name = name;
         this.itemQuantities = parseItemQuantities(itemQuantitiesStr);

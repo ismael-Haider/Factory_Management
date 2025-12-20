@@ -39,7 +39,7 @@ public class Task {
     // For loading from CSV
     public Task(int id, int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate,
             TaskStatus status, int productLineId, double percentage,boolean delivered) {
-        counter += 1;
+        counter = id;
         this.id = id;
         this.productId = productId;
         this.quantity = quantity;
