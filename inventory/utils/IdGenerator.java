@@ -1,9 +1,10 @@
 package inventory.utils;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+// import java.util.concurrent.ConcurrentHashMap;
 
 public class IdGenerator {
-    private static final ConcurrentHashMap<Class<?>, Integer> counters = new ConcurrentHashMap<>();
+    private static final HashMap<Class<?>, Integer> counters = new HashMap<>();
 
     public static int generateId(Class<?> clazz,Integer i) {
         counters.put(clazz,  i);

@@ -79,7 +79,6 @@ public class TaskService {
     }
 
     public static synchronized Optional<Task> getTaskById(int id) {
-        System.out.println("aghiad"+id);
         return tasks.stream().filter(task -> task.getId() == id).findFirst();
     }
 
