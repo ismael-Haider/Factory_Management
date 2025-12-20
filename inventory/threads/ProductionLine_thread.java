@@ -29,11 +29,11 @@ public class ProductionLine_thread extends Thread {
                 int taskId=productLine.peekTask();
                 inventory.models.Task task=TaskService.getTaskById(taskId).get();
                 if(task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)){
+                    productLine.pollTask();
                     continue;
                 }
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)){
                     productLine.pollTask();
-                    System.out.println(productLine);
                     ProductLineService.updateProductLine(productLine);
                     continue;
                 }
@@ -55,7 +55,6 @@ public class ProductionLine_thread extends Thread {
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)){
 
                     productLine.pollTask();
-                    System.out.println(productLine);
                     ProductLineService.updateProductLine(productLine);
                     continue;
                 }
