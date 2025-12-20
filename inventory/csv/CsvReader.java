@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
- 
-
 public class CsvReader {
     public static List<inventory.models.Item> readItems(String fileName) throws IOException {
         List<inventory.models.Item> items = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&line!="") {
+            while ((line = reader.readLine()) != null) {
+                if (line.isEmpty())
+                    continue;
                 items.add(inventory.models.Item.fromCSV(line));
             }
         }

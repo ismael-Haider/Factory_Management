@@ -10,6 +10,7 @@ import java.util.Optional;
 import inventory.config.Constants;
 import inventory.csv.CsvReader;
 import inventory.csv.CsvWriter;
+import inventory.models.Item;
 import inventory.models.Product;
 
 public class ProductService {
@@ -33,6 +34,10 @@ public class ProductService {
 
     public static synchronized Optional<Product> getProductById(int id) {
         return products.stream().filter(product -> product.getId() == id).findFirst();
+    }
+
+    public static synchronized Optional<Product> getProductByName(String name) {
+        return products.stream().filter(p -> p.getName().equals(name)).findFirst();
     }
 
     public static synchronized List<Product> getAllProducts() {

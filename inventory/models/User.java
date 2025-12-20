@@ -19,7 +19,7 @@ public class User {
     }
 
     public User(String userName, String password, UserRole role) {
-        counter+=1;
+        counter=id;
         this.id = inventory.utils.IdGenerator.generateId(User.class,counter);
         this.userName = userName;
         this.password = password;

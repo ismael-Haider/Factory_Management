@@ -1,41 +1,44 @@
 package inventory.controllers;
 
-import inventory.services.UserService;
+import inventory.gui.ManagerFrame;
+import inventory.gui.supervisor_frame.SupervisorFrame;
 import inventory.models.User;
 import inventory.models.enums.UserRole;
+import inventory.services.UserService;
 
 public class LoginController {
 
     public LoginController() {
     }
 
-    public Boolean login(String username, String password) {
-
+    public boolean login(String username, String password) {
+        username=username.toLowerCase();
+        
         // محاكاة محاولة تسجيل الدخول
-        UserService.authenticate(username, password).ifPresentOrElse(user -> {
-            // التحقق من نوع المستخدم
+        return UserService.authenticate(username, password).map(user -> {
+            // تحقق من نوع المستخدم وافتح النافذة المناسبة
             if (user.getRole() == UserRole.MANAGER) {
-                openManagerPage(user);
+                openManagerFrame(user);
             } else if (user.getRole() == UserRole.SUPERVISOR) {
-                openSupervisorPage(user);
+                openSupervisorFrame(user);
             }
-
-        }, () -> {
-            System.out.println("enter a valid username or password");
-        });
             return true;
-
+        }).orElse(false); // إذا فشل تسجيل الدخول
     }
 
-    private void openManagerPage(User user) {
-        System.out.println("welcome " + user.getUserName());
-        // افتح صفحة المدير
-        // ManagerDashboard.show();
+    private void openManagerFrame(User user) {
+        // إنشاء وإظهار ManagerFrame
+        java.awt.EventQueue.invokeLater(() -> {
+            ManagerFrame managerFrame = new ManagerFrame();
+            managerFrame.setVisible(true);
+        });
     }
 
-    private void openSupervisorPage(User user) {
-        System.out.println("welcome " + user.getUserName());
-        // افتح صفحة المشرف
-        // SupervisorDashboard.show();
+    private void openSupervisorFrame(User user) {
+        // إنشاء وإظهار SupervisorFrame
+        java.awt.EventQueue.invokeLater(() -> {
+            SupervisorFrame supervisorFrame = new SupervisorFrame(user);
+            supervisorFrame.setVisible(true);
+        });
     }
 }

@@ -30,7 +30,7 @@ public class ProductLine {
 
     // For loading from CSV (taskQueue as "id1,id2,id3")
     public ProductLine(int id, String name, ProductLineStatus status, double efficiency, String taskQueueStr) {
-        counter+=1;
+        counter=id;
         this.id = id;
         this.name = name;
         this.status = status;

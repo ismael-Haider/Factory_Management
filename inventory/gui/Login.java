@@ -1,133 +1,199 @@
 package inventory.gui;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import javax.swing.ImageIcon;
-import java.awt.Image;
+//import inventory.controllers.LoginController;
 import inventory.controllers.LoginController;
-
-import java.awt.Color;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class Login extends JFrame {
+//    LoginController loginController;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginBtn;
+    private JLabel titleLabel, userLabel, passLabel;
     LoginController loginController;
-
-    ImageIcon notShow = new ImageIcon("src/notshow.png");
-    ImageIcon show = new ImageIcon("src/show.png");
-    String userPlaceholder = "enter username";
-    String passPlaceholder = "enter Password";
-
     public Login(LoginController loginController) {
         this.loginController = loginController;
+
         setTitle("Login");
-        setSize(400, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(null);
+        setResizable(false);
+        getContentPane().setBackground(Color.decode("#ECF0F1"));
 
-        JTextField userField = new JTextField("enter username");
-        userField.setBounds(100, 100, 200, 30);
-        // userField.setFocusable(false);
-        userField.setForeground(Color.GRAY);
-        userField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                if (userField.getText().equals("enter username")) {
-                    userField.setText("");
-                    userField.setForeground(Color.BLACK);
+        titleLabel = new JLabel("Pro manage");
+        titleLabel.setFont(new Font("Segoe Script", Font.BOLD, 36));
+        titleLabel.setForeground(Color.decode("#2C3E50"));
+
+        userLabel = new JLabel("User Name:");
+        userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+
+        passLabel = new JLabel("Password:");
+        passLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+
+        usernameField = new JTextField();
+        usernameField.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+
+        passwordField = new JPasswordField();
+        passwordField.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+        passwordField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    loginBtn.doClick(); // simulate button click
                 }
             }
-
-            public void focusLost(FocusEvent evt) {
-                if (userField.getText().isEmpty()) {
-                    userField.setForeground(Color.GRAY);
-                    userField.setText("enter username");
-                }
-            }
+            
         });
 
-        JPasswordField passField = new JPasswordField(passPlaceholder);
-        passField.setBounds(100, 175, 170, 30);
-        passField.setForeground(Color.GRAY);
-        passField.setEchoChar((char) 0);
-        // passField.setFocusable(false);
-        passField.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                String passText = new String(passField.getPassword());
-                if (passText.equals(passPlaceholder)) {
-                    passField.setText("");
-                    passField.setForeground(Color.BLACK);
-                    passField.setEchoChar('•');
-                }
-            }
-
-            public void focusLost(FocusEvent evt) {
-                String passText = new String(passField.getPassword());
-                if (passText.isEmpty()) {
-                    passField.setForeground(Color.GRAY);
-                    passField.setText("enter Password");
-                    passField.setEchoChar((char) 0);
-                }
-            }
-        });
-
-        JButton echoChaeButton = new JButton("");
-        echoChaeButton.setBounds(270, 175, 30, 30);
-        echoChaeButton.setFocusable(false);
-        echoChaeButton.setIcon(resizeImage(show, 30, 30));
-        echoChaeButton.addActionListener(e -> {
-
-            if (passField.getEchoChar() == '•') {
-                passField.setEchoChar((char) 0);
-                echoChaeButton.setIcon(resizeImage(notShow, 30, 30));
-            } else {
-                passField.setEchoChar('•');
-                echoChaeButton.setIcon(resizeImage(show, 30, 30));
-            }
-        });
-        add(echoChaeButton);
-
-        JButton loginBtn = new JButton("Login");
-        loginBtn.setBounds(150, 300, 100, 30);
+        loginBtn = new JButton("Login");
+        loginBtn.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        loginBtn.setBackground(Color.decode("#2980B9"));
         loginBtn.setFocusable(false);
-        loginBtn.setBackground(new Color(70, 130, 180));
         loginBtn.setForeground(Color.WHITE);
+        
+        loginBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            private Color originalColor = Color.decode("#2980B9");
+            private Color hoverColor = Color.decode("#1ABC9C");
 
-        add(userField);
-        add(passField);
-        add(loginBtn);
-
-        // هون التعديل تبع controller==================================================
-        loginBtn.addActionListener(e -> {
-
-            String username = userField.getText();
-            String password = new String(passField.getPassword());
-            boolean success = loginController.login(username, password);
-            if (success) {
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(null, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                loginBtn.setBackground(hoverColor);
+                loginBtn.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand
             }
 
-            setPlassholder(userField, userPlaceholder);
-            setPlassholder(passField, passPlaceholder);
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                loginBtn.setBackground(originalColor);
+                loginBtn.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // Reset cursor
+            }
 
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                loginBtn.setBackground(Color.decode("#16A085")); // Optional: click effect
+            }
+
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                if (loginBtn.contains(evt.getPoint())) {
+                    loginBtn.setBackground(hoverColor); // Back to hover color
+                }
+            }
         });
-        setVisible(true);
-    }
+        
+        
+        
+        
+        
+        
+        loginBtn.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = String.valueOf(passwordField.getPassword());
 
-    private void setPlassholder(JTextField field, String placeholder) {
-        field.setText(placeholder);
-        field.setForeground(Color.GRAY);
-    }
+            boolean success = loginController.login(username, password);
+            System.out.println(username + " " + password);
+            System.out.println(success);
+            
+            if(success){
+                System.out.println("success");
+                dispose();
+            }else{
+                System.out.println("fail");
+            }
+            // if (success) {
+            //     dispose();
+            //     ManagerFrame managerFrame = new ManagerFrame();
+            //     managerFrame.setVisible(true);
+            // }else if(username.equals())
+            // else {
+            //     JOptionPane.showMessageDialog(this, "Invalid username or password", "Login Error",
+            //             JOptionPane.ERROR_MESSAGE);
+            // }
+        });
 
-    public static ImageIcon resizeImage(ImageIcon icon, int w, int h) {
-        Image img = icon.getImage();
-        Image newImg = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        return new ImageIcon(newImg);
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(10, 10, 10, 10);
+        c.fill = GridBagConstraints.HORIZONTAL;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        add(titleLabel, c);
+
+        c.gridy++;
+        add(userLabel, c);
+        c.gridy++;
+        add(usernameField, c);
+
+        c.gridy++;
+        add(passLabel, c);
+        c.gridy++;
+        add(passwordField, c);
+
+        c.gridy++;
+        add(loginBtn, c);
+
+        pack();
+        setLocationRelativeTo(null);
+        // === Username Placeholder ===
+        usernameField.setText("Enter Username");
+        usernameField.setForeground(Color.GRAY);
+
+        usernameField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (usernameField.getText().equals("Enter Username")) {
+                    usernameField.setText("");
+                    usernameField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (usernameField.getText().isEmpty()) {
+                    usernameField.setText("Enter Username");
+                    usernameField.setForeground(Color.GRAY);
+                }
+            }
+        });
+
+        // === Password Placeholder ===
+        passwordField.setEchoChar((char) 0);
+        passwordField.setText("Enter Password");
+        passwordField.setForeground(Color.GRAY);
+
+        passwordField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                String pass = String.valueOf(passwordField.getPassword());
+                if (pass.equals("Enter Password")) {
+                    passwordField.setText("");
+                    passwordField.setEchoChar('●');
+                    passwordField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                String pass = String.valueOf(passwordField.getPassword());
+                if (pass.isEmpty()) {
+                    passwordField.setEchoChar((char) 0);
+                    passwordField.setText("Enter Password");
+                    passwordField.setForeground(Color.GRAY);
+                }
+            }
+        });
+
+        // Enter to move to password
+        usernameField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    passwordField.requestFocus();
+                }
+            }
+        });
     }
 
 }
+

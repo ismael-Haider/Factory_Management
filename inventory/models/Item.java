@@ -24,7 +24,7 @@ public class Item {
 
     // For loading from CSV
     public Item(int id, String name, String category, double price, int quantity, int minQuantity) {
-        counter+=1;
+        counter=id;
         this.id = id;
         this.name = name;
         this.category = category;
