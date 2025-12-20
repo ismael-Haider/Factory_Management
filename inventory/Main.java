@@ -1,15 +1,14 @@
 package inventory;
 
+import inventory.controllers.*;
+import inventory.gui.*;
+import inventory.models.*;
+import inventory.services.*;
+import inventory.threads.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import inventory.models.enums.*;
-// import inventory.controllers.LoginController;
-// import inventory.gui.Login;
-import inventory.models.*;
-import inventory.services.*;
-import inventory.threads.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,8 +20,9 @@ public class Main {
         TaskService.init();
         ProductLineService.init();
         UserService.init();
-        // LoginController loginController = new LoginController(userService);
-        // Login loginGui=new Login(loginController);
+        LoginController loginController = new LoginController();
+        Login login = new Login(loginController);
+        login.setVisible(true);
         // Start threads
         // TaskProcessor taskProcessor = new TaskProcessor();
         InventoryUpdater inventoryUpdater = new InventoryUpdater();
