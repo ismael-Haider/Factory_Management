@@ -96,7 +96,7 @@ public class TaskService {
 
     public static synchronized List<Task> getTasksByDeliveredDate(LocalDate date) {
         return tasks.stream()
-                .filter(task -> task.getDeliveredDate().equals(date) && task.getStatus() == TaskStatus.FINISHED)
+                .filter(task -> (task.getDeliveredDate().equals(date)||task.getDeliveredDate().isBefore(date)) && task.getStatus() == TaskStatus.FINISHED)
                 .toList();
     }
 
