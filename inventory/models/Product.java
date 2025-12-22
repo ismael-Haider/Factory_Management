@@ -12,7 +12,7 @@ public class Product {
 
     public Product(String name, Map<Integer, Integer> itemQuantities) {
         counter+=1;
-        this.id = inventory.utils.IdGenerator.generateId(Product.class,counter);
+        this.id = counter;
         this.name = name;
         this.itemQuantities = new HashMap<>(itemQuantities);
     }

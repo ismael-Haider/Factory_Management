@@ -10,6 +10,7 @@ import inventory.csv.CsvReader;
 import inventory.csv.CsvWriter;
 import inventory.models.User;
 import inventory.models.enums.UserRole;
+import inventory.utils.Exceptions;
 
 public class UserService {
     private static List<User> users = new ArrayList<>();
@@ -62,17 +63,13 @@ public class UserService {
             users.add(defaultManager);
             return true;
         } catch(Exception e){
-            //error.txt
+            Exceptions.saveError(e.getMessage());
             return false;
         }
         
     }
 
     public static void saveUsers() {
-        try {
             CsvWriter.writeToCsv(Constants.USERS_CSV, users);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

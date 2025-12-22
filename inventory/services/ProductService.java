@@ -1,11 +1,9 @@
 package inventory.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 
 import inventory.config.Constants;
 import inventory.csv.CsvReader;
@@ -53,18 +51,10 @@ public class ProductService {
     }
 
     private static void loadProducts() {
-        try {
-            products = CsvReader.readProducts(Constants.PRODUCTS_CSV);
-        } catch (IOException e) {
-            // File might not exist yet
-        }
+        products = CsvReader.readProducts(Constants.PRODUCTS_CSV);
     }
 
     public static void saveProducts() {
-        try {
-            CsvWriter.writeToCsv(Constants.PRODUCTS_CSV, products);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        CsvWriter.writeToCsv(Constants.PRODUCTS_CSV, products);
     }
 }
