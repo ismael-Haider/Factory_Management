@@ -28,9 +28,9 @@ public class ProductLineService {
         return new ArrayList<>(productLines);
     }
 
-    // public static synchronized void updateProductLine(ProductLine updatedProductLine) {
-    //     productLines.replaceAll(pl -> pl.getId() == updatedProductLine.getId() ? updatedProductLine : pl);
-    // }
+    public static synchronized void updateProductLine(ProductLine updatedProductLine) {
+        productLines.replaceAll(pl -> pl.getId() == updatedProductLine.getId() ? updatedProductLine : pl);
+    }
 
     private static void loadProductLines() {
             productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV);

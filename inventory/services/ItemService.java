@@ -40,10 +40,9 @@ public class ItemService {
         return new ArrayList<>(items);
     }
 
-    // public static synchronized void updateItem(Item updatedItem) {
-    // items.replaceAll(item -> item.getId() == updatedItem.getId() ? updatedItem :
-    // item);
-    // }
+    public static synchronized void updateItem(Item updatedItem) {
+        items.replaceAll(item -> item.getId() == updatedItem.getId() ? updatedItem : item);
+    }
 
     public static synchronized void deleteItem(int id) {
         items.removeIf(item -> item.getId() == id);

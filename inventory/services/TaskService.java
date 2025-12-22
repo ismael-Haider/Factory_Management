@@ -57,8 +57,8 @@ public class TaskService {
                 System.out.println((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
                 task.addPercentage((Math.min(task.getQuantity(), q) * 100 / task.getQuantity()));
                 t.setPercentage((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
-                // updateTask(task);
-                // updateTask(t);
+                updateTask(task);
+                updateTask(t);
                 FinishedProductService.reduceQuantity(task.getProductId(), (int) Math.min(task.getQuantity(), q));
             }
         }
@@ -88,10 +88,10 @@ public class TaskService {
         return new ArrayList<>(tasks);
     }
 
-    // public static synchronized void updateTask(Task updatedTask) {
-    // tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask :
-    // task);
-    // }
+    public static synchronized void updateTask(Task updatedTask) {
+    tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask :
+    task);
+    }
 
     public static synchronized void deleteTask(int id) {
         tasks.removeIf(task -> task.getId() == id);

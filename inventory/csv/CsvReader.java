@@ -11,7 +11,7 @@ public class CsvReader {
         List<inventory.models.Item> items = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
                 if (line.isEmpty())
                     continue;
                 items.add(inventory.models.Item.fromCSV(line));
@@ -28,7 +28,7 @@ public class CsvReader {
         List<inventory.models.Product> products = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
                 products.add(inventory.models.Product.fromCSV(line));
             }
         }
@@ -46,7 +46,7 @@ public class CsvReader {
         List<inventory.models.FinishedProduct> finishedProducts = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
                 finishedProducts.add(inventory.models.FinishedProduct.fromCSV(line));
             }
         }
@@ -64,7 +64,7 @@ public class CsvReader {
         List<inventory.models.Task> tasks = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
                 tasks.add(inventory.models.Task.fromCSV(line));
             }
         }
@@ -82,7 +82,7 @@ public class CsvReader {
         List<inventory.models.ProductLine> productLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
                 productLines.add(inventory.models.ProductLine.fromCSV(line));
             }
         }
@@ -100,7 +100,7 @@ public class CsvReader {
         List<inventory.models.User> users = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
                 users.add(inventory.models.User.fromCSV(line));
             }
         }
