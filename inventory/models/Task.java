@@ -21,7 +21,7 @@ public class Task {
     public Task(int productId, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate,
             int productLineId) {
         counter += 1;
-        this.id = inventory.utils.IdGenerator.generateId(Task.class, counter);
+        this.id = counter;
         this.productId = productId;
         this.quantity = quantity;
         this.clientName = clientName;

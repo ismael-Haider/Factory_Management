@@ -3,7 +3,7 @@ package inventory.models;
 import java.util.Objects;
 
 public class Item {
-    static int counter=0;
+    public static int counter=0;
     private int id;
     private String name;
     private String category;
@@ -14,7 +14,7 @@ public class Item {
     public Item(String name, String category, double price, int quantity, int minQuantity) {
         counter+=1;
         System.out.println(counter);
-        this.id = inventory.utils.IdGenerator.generateId(Item.class,counter);
+        this.id = counter;
         this.name = name;
         this.category = category;
         this.price = price;

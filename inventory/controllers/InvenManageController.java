@@ -2,19 +2,27 @@ package inventory.controllers;
 
 import inventory.models.*;
 import inventory.services.*;
+import inventory.utils.Exceptions;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InvenManageController {
 
     public InvenManageController() {
-
     }
 
-    public void add_item(String name, String category, double price, int quantity, int minQuantity) {
+    public boolean add_item(String name, String category, double price, int quantity, int minQuantity) {
         name = name.toLowerCase();
         category = category.toLowerCase();
+        if (quantity>10000000 || quantity<0 || minQuantity>10000000 || minQuantity<0 || price>10000000 || price<0) {
+            try{
+            Exceptions.saveError("the item's properties aren't realistic. ");}
+            catch (Exception e){
+            }
+            return false;
+        }
         ItemService.addItem(new Item(name, category, price, quantity, minQuantity));
+        return true;
     }
 
     public List<Item> view_items() {

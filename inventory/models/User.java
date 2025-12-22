@@ -12,7 +12,7 @@ public class User {
 
     public User(String userName, String password) {
         counter+=1;
-        this.id = inventory.utils.IdGenerator.generateId(User.class,counter);
+        this.id = counter;
         this.userName = userName;
         this.password = password;
         this.role = UserRole.SUPERVISOR; // Default
@@ -20,7 +20,7 @@ public class User {
 
     public User(String userName, String password, UserRole role) {
         counter=id;
-        this.id = inventory.utils.IdGenerator.generateId(User.class,counter);
+        this.id = counter;
         this.userName = userName;
         this.password = password;
         this.role = role;

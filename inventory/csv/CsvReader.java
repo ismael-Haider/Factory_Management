@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvReader {
-    public static List<inventory.models.Item> readItems(String fileName) throws IOException {
+    public static List<inventory.models.Item> readItems(String fileName) {
         List<inventory.models.Item> items = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -16,11 +16,15 @@ public class CsvReader {
                     continue;
                 items.add(inventory.models.Item.fromCSV(line));
             }
+        }catch(IOException e){
+            try{CsvWriter.saveError(fileName+" doesn't exist. ");}
+            catch(IOException ex){ex.printStackTrace();}
+            return new ArrayList<>();
         }
         return items;
     }
 
-    public static List<inventory.models.Product> readProducts(String fileName) throws IOException {
+    public static List<inventory.models.Product> readProducts(String fileName) {
         List<inventory.models.Product> products = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -28,10 +32,17 @@ public class CsvReader {
                 products.add(inventory.models.Product.fromCSV(line));
             }
         }
+        catch(IOException e){
+            try{
+                CsvWriter.saveError(fileName+" doesn't exist");
+            }
+            catch(IOException ex){ex.printStackTrace();}
+            return new ArrayList<>();
+            }
         return products;
     }
 
-    public static List<inventory.models.FinishedProduct> readFinishedProducts(String fileName) throws IOException {
+    public static List<inventory.models.FinishedProduct> readFinishedProducts(String fileName) {
         List<inventory.models.FinishedProduct> finishedProducts = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -39,10 +50,17 @@ public class CsvReader {
                 finishedProducts.add(inventory.models.FinishedProduct.fromCSV(line));
             }
         }
+        catch(IOException e){
+            try{
+                CsvWriter.saveError(fileName+" doesn't exist");
+            }
+            catch(IOException ex){ex.printStackTrace();}
+            return new ArrayList<>();
+            }
         return finishedProducts;
     }
 
-    public static List<inventory.models.Task> readTasks(String fileName) throws IOException {
+    public static List<inventory.models.Task> readTasks(String fileName) {
         List<inventory.models.Task> tasks = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -50,10 +68,17 @@ public class CsvReader {
                 tasks.add(inventory.models.Task.fromCSV(line));
             }
         }
+        catch(IOException e){
+            try{
+                CsvWriter.saveError(fileName+" doesn't exist");
+            }
+            catch(IOException ex){ex.printStackTrace();}
+            return new ArrayList<>();
+            }
         return tasks;
     }
 
-    public static List<inventory.models.ProductLine> readProductLines(String fileName) throws IOException {
+    public static List<inventory.models.ProductLine> readProductLines(String fileName) {
         List<inventory.models.ProductLine> productLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -61,6 +86,13 @@ public class CsvReader {
                 productLines.add(inventory.models.ProductLine.fromCSV(line));
             }
         }
+        catch(IOException e){
+            try{
+                CsvWriter.saveError(fileName+" doesn't exist");
+            }
+            catch(IOException ex){ex.printStackTrace();}
+            return new ArrayList<>();
+            }
         return productLines;
     }
 

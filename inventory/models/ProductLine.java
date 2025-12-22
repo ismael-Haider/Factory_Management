@@ -19,7 +19,7 @@ public class ProductLine {
 
     public ProductLine(String name, double efficiency) {
         counter+=1;
-        this.id = inventory.utils.IdGenerator.generateId(ProductLine.class,counter);
+        this.id = counter;
         this.name = name;
         this.status = ProductLineStatus.STOP;
         this.efficiency = efficiency;

@@ -3,10 +3,12 @@ package inventory.csv;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CsvWriter {
-    public static <T> void writeToCsv(String fileName, List<T> objects) throws IOException {
+    public static <T> void writeToCsv(String fileName, List<T> objects) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName,false),true)) {
             for (T obj : objects) {
                 // Assuming each object has a toCSV() method
@@ -24,6 +26,16 @@ public class CsvWriter {
                     writer.write(((inventory.models.User) obj).toCSV() + "\n");
                 }
             }
+        }
+        catch (IOException e) {
+            try{
+                saveError(fileName+" doesn't exist.");}
+            catch(IOException ex){ex.printStackTrace();}
+        }
+    }
+    public static void saveError(String message) throws IOException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(inventory.config.Constants.ERROR_TXT,true),true)) {
+            writer.println(message);
         }
     }
 }

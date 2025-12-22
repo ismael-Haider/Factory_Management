@@ -1,6 +1,5 @@
 package inventory.services;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,53 +24,56 @@ public class TaskService {
         getTaskById(id).ifPresent(task -> {
             task.setStatus(TaskStatus.FINISHED);
             System.out.println(task.getStatus());
-            updateTask(task);
+            // updateTask(task);
             FinishedProductService.addFinishedProduct(task.getProductId(), task.getQuantity());
         });
     }
 
-    public static synchronized void cancelTask(int id){
-        Task task=getTaskById(id).get();
-        HashMap<Integer, Integer> items=ProductService.getProductById(task.getProductId()).get().getItemQuantities();
-        for (Integer i: items.keySet()){
-            ItemService.getItemById(i).get().addQuantity((int)(items.get(i)*task.getQuantity()*(100-task.getPercentage())/100));
+    public static synchronized void cancelTask(int id) {
+        Task task = getTaskById(id).get();
+        HashMap<Integer, Integer> items = ProductService.getProductById(task.getProductId()).get().getItemQuantities();
+        for (Integer i : items.keySet()) {
+            ItemService.getItemById(i).get()
+                    .addQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100));
         }
         ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
-        if (task.getStatus().equals(TaskStatus.IN_QUEUE)){
+        if (task.getStatus().equals(TaskStatus.IN_QUEUE)) {
             task.setStatus(TaskStatus.CANCELLED);
             return;
         }
         task.setStatus(TaskStatus.CANCELLED);
-        FinishedProductService.addFinishedProduct(task.getProductId(),(int)(task.getQuantity()*task.getPercentage()/100.0));
+        FinishedProductService.addFinishedProduct(task.getProductId(),
+                (int) (task.getQuantity() * task.getPercentage() / 100.0));
     }
 
     public static synchronized void addTask(Task task) {
         tasks.add(task);
-        List<Task> cancelled=tasks.stream().filter(t->t.getStatus()==TaskStatus.CANCELLED&&t.getProductId()==task.getProductId()&&t.getPercentage()>0).toList();
-        if (cancelled.size()>0){
-            double q=0;
-            for (Task t:cancelled){
-                q=(t.getQuantity()*t.getPercentage()/100.0);
-                System.out.println((q-Math.min(task.getQuantity(),q))*100/t.getQuantity());
-                task.addPercentage((Math.min(task.getQuantity(),q)*100/task.getQuantity()));
-                t.setPercentage((q-Math.min(task.getQuantity(),q))*100/t.getQuantity());
-                updateTask(task);
-                updateTask(t);
-                FinishedProductService.reduceQuantity(task.getProductId(), (int)Math.min(task.getQuantity(),q));
+        List<Task> cancelled = tasks.stream().filter(t -> t.getStatus() == TaskStatus.CANCELLED
+                && t.getProductId() == task.getProductId() && t.getPercentage() > 0).toList();
+        if (cancelled.size() > 0) {
+            double q = 0;
+            for (Task t : cancelled) {
+                q = (t.getQuantity() * t.getPercentage() / 100.0);
+                System.out.println((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
+                task.addPercentage((Math.min(task.getQuantity(), q) * 100 / task.getQuantity()));
+                t.setPercentage((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
+                // updateTask(task);
+                // updateTask(t);
+                FinishedProductService.reduceQuantity(task.getProductId(), (int) Math.min(task.getQuantity(), q));
             }
         }
-        
-        if (task.getPercentage()==100){
+
+        if (task.getPercentage() == 100) {
             finishTask(task.getId());
             System.out.println("hi");
             ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
-            
-            
+
             return;
         }
-        HashMap <Integer, Integer> items=ProductService.getProductById(task.getProductId()).get().getItemQuantities();
-        for (Integer i: items.keySet()){
-            ItemService.getItemById(i).get().reduceQuantity((int)(items.get(i)*task.getQuantity()*(100-task.getPercentage())/100.0));
+        HashMap<Integer, Integer> items = ProductService.getProductById(task.getProductId()).get().getItemQuantities();
+        for (Integer i : items.keySet()) {
+            ItemService.getItemById(i).get()
+                    .reduceQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0));
         }
         // task.setStatus(inventory.models.enums.TaskStatus.IN_QUEUE);
         // productLineService.getProductLineById(task.getProductLineId()).get().addTask(task.getId());
@@ -86,9 +88,10 @@ public class TaskService {
         return new ArrayList<>(tasks);
     }
 
-    public static synchronized void updateTask(Task updatedTask) {
-        tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask : task);
-    }
+    // public static synchronized void updateTask(Task updatedTask) {
+    // tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask :
+    // task);
+    // }
 
     public static synchronized void deleteTask(int id) {
         tasks.removeIf(task -> task.getId() == id);
@@ -96,23 +99,16 @@ public class TaskService {
 
     public static synchronized List<Task> getTasksByDeliveredDate(LocalDate date) {
         return tasks.stream()
-                .filter(task -> (task.getDeliveredDate().equals(date)||task.getDeliveredDate().isBefore(date)) && task.getStatus() == TaskStatus.FINISHED)
+                .filter(task -> (task.getDeliveredDate().equals(date) || task.getDeliveredDate().isBefore(date))
+                        && task.getStatus() == TaskStatus.FINISHED)
                 .toList();
     }
 
     private static void loadTasks() {
-        try {
-            tasks = CsvReader.readTasks(Constants.TASKS_CSV);
-        } catch (IOException e) {
-            // File might not exist yet
-        }
+        tasks = CsvReader.readTasks(Constants.TASKS_CSV);
     }
 
     public static void saveTasks() {
-        try {
-            CsvWriter.writeToCsv(Constants.TASKS_CSV, tasks);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        CsvWriter.writeToCsv(Constants.TASKS_CSV, tasks);
     }
 }

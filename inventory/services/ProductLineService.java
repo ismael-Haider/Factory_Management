@@ -1,6 +1,5 @@
 package inventory.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,23 +28,15 @@ public class ProductLineService {
         return new ArrayList<>(productLines);
     }
 
-    public static synchronized void updateProductLine(ProductLine updatedProductLine) {
-        productLines.replaceAll(pl -> pl.getId() == updatedProductLine.getId() ? updatedProductLine : pl);
-    }
+    // public static synchronized void updateProductLine(ProductLine updatedProductLine) {
+    //     productLines.replaceAll(pl -> pl.getId() == updatedProductLine.getId() ? updatedProductLine : pl);
+    // }
 
     private static void loadProductLines() {
-        try {
             productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV);
-        } catch (IOException e) {
-            // File might not exist yet
-        }
     }
 
     public static void saveProductLines() {
-        try {
             CsvWriter.writeToCsv(Constants.PRODUCT_LINES_CSV, productLines);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

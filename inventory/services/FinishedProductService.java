@@ -9,6 +9,7 @@ import inventory.config.Constants;
 import inventory.csv.CsvReader;
 import inventory.csv.CsvWriter;
 import inventory.models.FinishedProduct;
+import inventory.utils.Exceptions;
 
 public class FinishedProductService {
     private static List<FinishedProduct> finishedProducts = new ArrayList<>();
@@ -22,17 +23,18 @@ public class FinishedProductService {
         finishedProducts.add(finishedProduct);
     }
 
-    public static synchronized void addFinishedProduct(int productId ,int quantity) {
+    public static synchronized void addFinishedProduct(int productId, int quantity) {
         FinishedProduct finishedProduct = getFinishedProductByProductId(productId).orElse(null);
         if (finishedProduct != null) {
             finishedProduct.setQuantity(finishedProduct.getQuantity() + quantity);
-            updateFinishedProduct(finishedProduct);
+            // updateFinishedProduct(finishedProduct);
             return;
         }
-        finishedProduct = new FinishedProduct(productId,ProductService.getProductById(productId).get().getName(), quantity);
+        finishedProduct = new FinishedProduct(productId, ProductService.getProductById(productId).get().getName(),
+                quantity);
         finishedProducts.add(finishedProduct);
     }
-    
+
     public static synchronized Optional<FinishedProduct> getFinishedProductByProductId(int productId) {
         return finishedProducts.stream().filter(fp -> fp.getProductId() == productId).findFirst();
     }
@@ -41,9 +43,11 @@ public class FinishedProductService {
         return new ArrayList<>(finishedProducts);
     }
 
-    public static synchronized void updateFinishedProduct(FinishedProduct updatedFinishedProduct) {
-        finishedProducts.replaceAll(fp -> fp.getProductId() == updatedFinishedProduct.getProductId() ? updatedFinishedProduct : fp);
-    }
+    // public static synchronized void updateFinishedProduct(FinishedProduct
+    // updatedFinishedProduct) {
+    // finishedProducts.replaceAll(fp -> fp.getProductId() ==
+    // updatedFinishedProduct.getProductId() ? updatedFinishedProduct : fp);
+    // }
 
     public static synchronized void deleteFinishedProduct(int productId) {
         finishedProducts.removeIf(fp -> fp.getProductId() == productId);
@@ -52,23 +56,15 @@ public class FinishedProductService {
     public static synchronized void reduceQuantity(int productId, int quantity) {
         getFinishedProductByProductId(productId).ifPresent(fp -> {
             fp.reduceQuantity(quantity);
-            updateFinishedProduct(fp);
+            // updateFinishedProduct(fp);
         });
     }
 
     private static void loadFinishedProducts() {
-        try {
-            finishedProducts = CsvReader.readFinishedProducts(Constants.FINISHED_PRODUCTS_CSV);
-        } catch (IOException e) {
-            // File might not exist yet
-        }
+        finishedProducts = CsvReader.readFinishedProducts(Constants.FINISHED_PRODUCTS_CSV);
     }
 
     public static void saveFinishedProducts() {
-        try {
-            CsvWriter.writeToCsv(Constants.FINISHED_PRODUCTS_CSV, finishedProducts);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        CsvWriter.writeToCsv(Constants.FINISHED_PRODUCTS_CSV, finishedProducts);
     }
 }

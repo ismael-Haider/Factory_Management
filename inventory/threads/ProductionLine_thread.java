@@ -34,20 +34,20 @@ public class ProductionLine_thread extends Thread {
                 }
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)){
                     productLine.pollTask();
-                    ProductLineService.updateProductLine(productLine);
+                    // ProductLineService.updateProductLine(productLine);
                     continue;
                 }
                 task.setStatus(inventory.models.enums.TaskStatus.IN_PROGRESS);
                 productLine.start();
                 task.addPercentage(productLine.getEfficiency()*100/task.getQuantity());
-                TaskService.updateTask(task);
+                // TaskService.updateTask(task);
                 if (task.getPercentage()>=100.0){
                     task.setStatus(inventory.models.enums.TaskStatus.FINISHED);
                     productLine.setStatus(inventory.models.enums.ProductLineStatus.STOP);
                     productLine.pollTask();
-                    TaskService.updateTask(task);
+                    // TaskService.updateTask(task);
                 }
-                ProductLineService.updateProductLine(productLine);
+                // ProductLineService.updateProductLine(productLine);
             }
             if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.RUNNING)&&!productLine.isQueueEmpty()){
                 int taskId=productLine.peekTask();
@@ -55,21 +55,21 @@ public class ProductionLine_thread extends Thread {
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)){
 
                     productLine.pollTask();
-                    ProductLineService.updateProductLine(productLine);
+                    // ProductLineService.updateProductLine(productLine);
                     continue;
                 }
                 if(task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)){
                     continue;
                 }
                 task.addPercentage(productLine.getEfficiency()*100/task.getQuantity());
-                TaskService.updateTask(task);
+                // TaskService.updateTask(task);
                 if (task.getPercentage()>=100.0){
                     TaskService.finishTask(task.getId());
                     productLine.setStatus(inventory.models.enums.ProductLineStatus.STOP);
                     productLine.pollTask();
-                    TaskService.updateTask(task);
+                    // TaskService.updateTask(task);
                 }
-                ProductLineService.updateProductLine(productLine);
+                // ProductLineService.updateProductLine(productLine);
             }
             try {
                 Thread.sleep(1000);
