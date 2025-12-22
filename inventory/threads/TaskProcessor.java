@@ -15,7 +15,7 @@ public class TaskProcessor extends Thread {
     }
 
     @Override
-    public void run() { 
+    public void run() {
         while (running) {
             try {
                 // Process each product line
@@ -23,9 +23,10 @@ public class TaskProcessor extends Thread {
                     if (productLine.getStatus() == ProductLineStatus.RUNNING && !productLine.isQueueEmpty()) {
                         Integer taskId = productLine.pollTask();
                         TaskService.getTaskById(taskId).ifPresent(task -> {
-                            // Simulate processing: update status to IN_PROGRESS, then FINISHED after some time
+                            // Simulate processing: update status to IN_PROGRESS, then FINISHED after some
+                            // time
                             task.setStatus(TaskStatus.IN_PROGRESS);
-                            // TaskService.updateTask(task);
+                            TaskService.updateTask(task);
                             logger.info("Processing task ID: " + taskId);
 
                             // Simulate production time (e.g., based on efficiency)
@@ -37,13 +38,13 @@ public class TaskProcessor extends Thread {
 
                             task.setStatus(TaskStatus.FINISHED);
                             task.setPercentage(100.0); // Full completion
-                            // TaskService.updateTask(task);
+                            TaskService.updateTask(task);
                             logger.info("Task ID " + taskId + " finished.");
 
                             // Update product line if queue is empty
                             if (productLine.isQueueEmpty()) {
                                 productLine.setStatus(ProductLineStatus.STOP);
-                                // ProductLineService.updateProductLine(productLine);
+                                ProductLineService.updateProductLine(productLine);
                             }
                         });
                     }

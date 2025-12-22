@@ -7,69 +7,75 @@ import inventory.services.TaskService;
 public class ProductionLine_thread extends Thread {
     ProductLine productLine;
     private volatile boolean running = true;
+
     public ProductionLine_thread(ProductLine productLine) {
         this.productLine = productLine;
     }
+
     @Override
     public void run() {
-        while (running){
-            if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.MAINTENANCE)){
+        while (running) {
+            if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.MAINTENANCE)) {
                 // try {
-                //     Thread.sleep((int)(1000));
+                // Thread.sleep((int)(1000));
                 // } catch (InterruptedException e) {
-                //     Thread.currentThread().interrupt();
+                // Thread.currentThread().interrupt();
                 // }
                 terminate();
                 continue;
             }
-            
-            //stop doesnt mean that pruduction line is closed it is just not working because there is no task
-            if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.STOP)&&!productLine.isQueueEmpty()){
-                
-                int taskId=productLine.peekTask();
-                inventory.models.Task task=TaskService.getTaskById(taskId).get();
-                if(task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)){
+
+            // stop doesnt mean that pruduction line is closed it is just not working
+            // because there is no task
+            if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.STOP)
+                    && !productLine.isQueueEmpty()) {
+
+                int taskId = productLine.peekTask();
+                inventory.models.Task task = TaskService.getTaskById(taskId).get();
+                if (task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)) {
                     productLine.pollTask();
                     continue;
                 }
-                if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)){
+                if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)) {
                     productLine.pollTask();
-                    // ProductLineService.updateProductLine(productLine);
+                    ProductLineService.updateProductLine(productLine);
                     continue;
                 }
+                System.out.println(task.toCSV());
                 task.setStatus(inventory.models.enums.TaskStatus.IN_PROGRESS);
                 productLine.start();
-                task.addPercentage(productLine.getEfficiency()*100/task.getQuantity());
-                // TaskService.updateTask(task);
-                if (task.getPercentage()>=100.0){
+                task.addPercentage(productLine.getEfficiency() * 100 / task.getQuantity());
+                TaskService.updateTask(task);
+                if (task.getPercentage() >= 100.0) {
                     task.setStatus(inventory.models.enums.TaskStatus.FINISHED);
                     productLine.setStatus(inventory.models.enums.ProductLineStatus.STOP);
                     productLine.pollTask();
-                    // TaskService.updateTask(task);
+                    TaskService.updateTask(task);
                 }
-                // ProductLineService.updateProductLine(productLine);
+                ProductLineService.updateProductLine(productLine);
             }
-            if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.RUNNING)&&!productLine.isQueueEmpty()){
-                int taskId=productLine.peekTask();
-                inventory.models.Task task=TaskService.getTaskById(taskId).get();
-                if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)){
+            if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.RUNNING)
+                    && !productLine.isQueueEmpty()) {
+                int taskId = productLine.peekTask();
+                inventory.models.Task task = TaskService.getTaskById(taskId).get();
+                if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)) {
 
                     productLine.pollTask();
-                    // ProductLineService.updateProductLine(productLine);
+                    ProductLineService.updateProductLine(productLine);
                     continue;
                 }
-                if(task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)){
+                if (task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)) {
                     continue;
                 }
-                task.addPercentage(productLine.getEfficiency()*100/task.getQuantity());
-                // TaskService.updateTask(task);
-                if (task.getPercentage()>=100.0){
+                task.addPercentage(productLine.getEfficiency() * 100 / task.getQuantity());
+                TaskService.updateTask(task);
+                if (task.getPercentage() >= 100.0) {
                     TaskService.finishTask(task.getId());
                     productLine.setStatus(inventory.models.enums.ProductLineStatus.STOP);
                     productLine.pollTask();
-                    // TaskService.updateTask(task);
+                    TaskService.updateTask(task);
                 }
-                // ProductLineService.updateProductLine(productLine);
+                ProductLineService.updateProductLine(productLine);
             }
             try {
                 Thread.sleep(1000);
@@ -78,9 +84,11 @@ public class ProductionLine_thread extends Thread {
             }
         }
     }
+
     public synchronized void terminate() {
         running = false;
     }
+
     public synchronized void resumeProduction() {
         running = true;
     }

@@ -27,7 +27,7 @@ public class FinishedProductService {
         FinishedProduct finishedProduct = getFinishedProductByProductId(productId).orElse(null);
         if (finishedProduct != null) {
             finishedProduct.setQuantity(finishedProduct.getQuantity() + quantity);
-            // updateFinishedProduct(finishedProduct);
+            updateFinishedProduct(finishedProduct);
             return;
         }
         finishedProduct = new FinishedProduct(productId, ProductService.getProductById(productId).get().getName(),
@@ -43,11 +43,10 @@ public class FinishedProductService {
         return new ArrayList<>(finishedProducts);
     }
 
-    // public static synchronized void updateFinishedProduct(FinishedProduct
-    // updatedFinishedProduct) {
-    // finishedProducts.replaceAll(fp -> fp.getProductId() ==
-    // updatedFinishedProduct.getProductId() ? updatedFinishedProduct : fp);
-    // }
+    public static synchronized void updateFinishedProduct(FinishedProduct updatedFinishedProduct) {
+        finishedProducts.replaceAll(
+                fp -> fp.getProductId() == updatedFinishedProduct.getProductId() ? updatedFinishedProduct : fp);
+    }
 
     public static synchronized void deleteFinishedProduct(int productId) {
         finishedProducts.removeIf(fp -> fp.getProductId() == productId);
@@ -56,7 +55,7 @@ public class FinishedProductService {
     public static synchronized void reduceQuantity(int productId, int quantity) {
         getFinishedProductByProductId(productId).ifPresent(fp -> {
             fp.reduceQuantity(quantity);
-            // updateFinishedProduct(fp);
+            updateFinishedProduct(fp);
         });
     }
 
