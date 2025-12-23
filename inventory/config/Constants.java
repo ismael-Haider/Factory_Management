@@ -9,4 +9,5 @@ public class Constants {
     public static final String PRODUCT_LINES_CSV = "inventory/data" + "/product_lines.csv";
     public static final String USERS_CSV = "inventory/data" + "/users.csv";
     public static final String ERROR_TXT = "inventory/log" + "/errors.txt";
+    public static final String NOTES_CSV = "inventory/data" + "/notes.csv";
 }

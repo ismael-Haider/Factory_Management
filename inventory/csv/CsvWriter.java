@@ -6,24 +6,27 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import inventory.config.Constants;
+import inventory.models.*;
 public class CsvWriter {
     public static <T> void writeToCsv(String fileName, List<T> objects) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName,false),true)) {
             for (T obj : objects) {
                 // Assuming each object has a toCSV() method
-                if (obj instanceof inventory.models.Item) {
-                    writer.write(((inventory.models.Item) obj).toCSV() + "\n");
-                } else if (obj instanceof inventory.models.Product) {
-                    writer.write(((inventory.models.Product) obj).toCSV() + "\n");
-                } else if (obj instanceof inventory.models.FinishedProduct) {
-                    writer.write(((inventory.models.FinishedProduct) obj).toCSV() + "\n");
-                } else if (obj instanceof inventory.models.Task) {
-                    writer.write(((inventory.models.Task) obj).toCSV() + "\n");
-                } else if (obj instanceof inventory.models.ProductLine) {
-                    writer.write(((inventory.models.ProductLine) obj).toCSV() + "\n");
-                } else if (obj instanceof inventory.models.User) {
-                    writer.write(((inventory.models.User) obj).toCSV() + "\n");
+                if (obj instanceof Item) {
+                    writer.write(((Item) obj).toCSV() + "\n");
+                } else if (obj instanceof Product) {
+                    writer.write(((Product) obj).toCSV() + "\n");
+                } else if (obj instanceof FinishedProduct) {
+                    writer.write(((FinishedProduct) obj).toCSV() + "\n");
+                } else if (obj instanceof Task) {
+                    writer.write(((Task) obj).toCSV() + "\n");
+                } else if (obj instanceof ProductLine) {
+                    writer.write(((ProductLine) obj).toCSV() + "\n");
+                } else if (obj instanceof User) {
+                    writer.write(((User) obj).toCSV() + "\n");
+                } else if (obj instanceof Note) {
+                    writer.write(((Note) obj).toCSV() + "\n");
                 }
             }
         }
@@ -34,7 +37,7 @@ public class CsvWriter {
         }
     }
     public static void saveError(String message) throws IOException {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(inventory.config.Constants.ERROR_TXT,true),true)) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(Constants.ERROR_TXT,true),true)) {
             writer.println(message);
         }
     }

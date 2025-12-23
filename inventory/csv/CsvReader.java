@@ -106,4 +106,18 @@ public class CsvReader {
         }
         return users;
     }
+
+    public static List<inventory.models.Note> readNotes(String fileName) {
+        List<inventory.models.Note> notes = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
+                notes.add(inventory.models.Note.fromCSV(line));
+            }
+        } catch (IOException e) {
+            try { CsvWriter.saveError(fileName + " doesn't exist"); } catch (IOException ex) { ex.printStackTrace(); }
+            return new ArrayList<>();
+        }
+        return notes;
+    }
 }

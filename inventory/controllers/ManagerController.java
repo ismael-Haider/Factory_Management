@@ -1,13 +1,16 @@
 package inventory.controllers;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import inventory.models.Note;
+import inventory.models.ProductLine;
 import java.util.List;
 
-import inventory.models.ProductLine;
 import inventory.models.Task;
 import inventory.models.User;
 import inventory.models.enums.ProductLineStatus;
 import inventory.models.enums.TaskStatus;
+import inventory.services.NoteService;
 import inventory.services.ProductLineService;
 import inventory.services.TaskService;
 import inventory.services.UserService;
@@ -51,6 +54,8 @@ public class ManagerController {
             }
         }
         ProductLineService.addProductLine(new ProductLine(name, efficiency));
+        // ///////////////////////AGHIAD
+        NoteService.addNewRating(0,ProductLineService.getAllProductLines().getLast().getId() );
         return true;
     }
 
@@ -97,7 +102,37 @@ public class ManagerController {
             hm.replace(pl, perf);
         }
         return hm;
-
     }
 
+    //////////////////////////////////AGHIAD
+    public List<Note> getAllNotes() {
+        return NoteService.getAllNotes();
+    }
+    public List<Note> getAllRatings(){
+        return NoteService.getAllRatings();
+    }
+
+    public void addNote(String text){
+        NoteService.addNewNote(text, LocalDateTime.now());
+    }
+    
+    public void setRating(int rating,int ProductLineId){
+        Note updaterate=NoteService.getRatingById(ProductLineId).get();
+        updaterate.setRating(rating);
+        NoteService.updateRating(updaterate);
+    }
+    
+    public HashMap<ProductLine,Note> getAllProductLinesWithRatings(){
+        HashMap<ProductLine,Note> map=new HashMap<>(); 
+        List<ProductLine> pls=ProductLineService.getAllProductLines();;
+        List<Note> ratings=getAllRatings();
+        for (ProductLine pl:pls){
+            for (Note r:ratings){
+                if (pl.getId()==r.getId()){
+                    map.put(pl, r);
+                }
+            }
+        }
+        return map;
+    }
 }

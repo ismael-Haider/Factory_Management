@@ -18,8 +18,6 @@ public class ProductLinePanel extends JPanel {
     private ProLineManageController controller;
     private JComboBox<String> searchOnTasksbyProductLineID;
     private JComboBox<String> searchOntasksbyProductName;
-    
-
 
     public ProductLinePanel(ProLineManageController controller) {
         this.controller = controller;
@@ -58,7 +56,6 @@ public class ProductLinePanel extends JPanel {
         filterLabel.setFont(filterLabel.getFont().deriveFont(Font.BOLD, 13f));
         filterLabel.setForeground(new Color(60, 60, 60));
 
-        
         filterBoxbyTaskStatus = new JComboBox<>(new String[] { "ALL", "IN_QUEUE", "FINISHED", "CANCELLED" });
         filterBoxbyTaskStatus.setPreferredSize(new Dimension(180, 35));
         filterBoxbyTaskStatus.addActionListener(e -> refreshTable());
@@ -79,8 +76,7 @@ public class ProductLinePanel extends JPanel {
 
         controller.viewAllProductLines()
                 .forEach(pl -> searchOnTasksbyProductLineID.addItem(
-                        pl.getId() + " - " + pl.getName()
-                ));
+                        pl.getId() + " - " + pl.getName()));
 
         searchOnTasksbyProductLineID.addActionListener(e -> refreshTable());
 
@@ -152,10 +148,10 @@ public class ProductLinePanel extends JPanel {
                         label.setBackground(new Color(255, 200, 200)); // Light red
                         label.setForeground(new Color(192, 57, 43));
                         break;
-                    
+
                     case "IN_PROGRESS":
                         label.setBackground(new Color(52, 152, 219));// Light blue
-                        label.setForeground(new Color(41, 128, 185));
+                        label.setForeground(Color.WHITE);
                         break;
                     default:
                         label.setBackground(Color.WHITE);

@@ -20,6 +20,7 @@ public class Main {
         ProductService.init();
         FinishedProductService.init();
         TaskService.init();
+        NoteService.init();
         ProductLineService.init();
         UserService.init();
         LoginController loginController = new LoginController();

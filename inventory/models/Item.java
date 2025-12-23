@@ -54,7 +54,6 @@ public class Item {
     }
 
     public static Item fromCSV(String csvLine) {
-        System.out.println(csvLine);
         String[] parts = csvLine.split(",");
         return new Item(Integer.parseInt(parts[0]), parts[1], parts[2], Double.parseDouble(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
     }

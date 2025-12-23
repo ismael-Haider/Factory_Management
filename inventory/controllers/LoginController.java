@@ -20,6 +20,7 @@ public class LoginController {
             if (user.getRole() == UserRole.MANAGER) {
                 openManagerFrame(user);
             } else if (user.getRole() == UserRole.SUPERVISOR) {
+                
                 openSupervisorFrame(user);
             }
             return true;
@@ -29,7 +30,7 @@ public class LoginController {
     private void openManagerFrame(User user) {
         // إنشاء وإظهار ManagerFrame
         java.awt.EventQueue.invokeLater(() -> {
-            ManagerFrame managerFrame = new ManagerFrame();
+            ManagerFrame managerFrame = new ManagerFrame(user);
             managerFrame.setVisible(true);
         });
     }
