@@ -6,6 +6,8 @@ import inventory.controllers.ProLineManageController;
 import inventory.gui.Login;
 import inventory.models.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 public class SupervisorFrame extends JFrame {
@@ -37,39 +39,61 @@ public class SupervisorFrame extends JFrame {
 
     private void initUI() {
         setTitle("Supervisor Dashboard");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1200, 600);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setResizable(true);
+        
+        setSize(1300, 800); // Increased size to accommodate larger table
         setLocationRelativeTo(null);
+        // Save on exit
+        addWindowListener(new WindowAdapter() {
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int choice = JOptionPane.showConfirmDialog(
+                        null,
+                        "Do you want to save before exiting?",
+                        "Confirm Exit",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    productLineController.save();
+                }
+                dispose();
+                System.exit(0);
+            }
+        });
+
+        // setLocationRelativeTo(null);
 
         // Top panel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(INACTIVE_COLOR);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25)); // Added left and right padding
 
         // Left panel - Supervisor name
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.setOpaque(false);
-        
+
         supervisorLabel = new JLabel("Supervisor:");
         supervisorLabel.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         supervisorLabel.setForeground(Color.WHITE);
-        
+
         supervisorNameLabel = new JLabel(user.getUserName());
         supervisorNameLabel.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         supervisorNameLabel.setForeground(Color.WHITE);
-        
+
         leftPanel.add(supervisorLabel);
         leftPanel.add(supervisorNameLabel);
 
         // Center panel - Buttons
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 10));
         centerPanel.setOpaque(false);
-        
+
         manageInventoryBtn = new JButton("Manage Inventory");
         manageInventoryBtn.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         manageInventoryBtn.setForeground(Color.WHITE);
         manageInventoryBtn.setBackground(ACTIVE_COLOR);
-        manageInventoryBtn.setBorder(null);
+        manageInventoryBtn.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         manageInventoryBtn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, "INVENTORY");
             setActiveButton(manageInventoryBtn, manageProductLineBtn);
@@ -79,29 +103,31 @@ public class SupervisorFrame extends JFrame {
         manageProductLineBtn.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         manageProductLineBtn.setForeground(Color.WHITE);
         manageProductLineBtn.setBackground(INACTIVE_COLOR);
-        manageProductLineBtn.setBorder(null);
+        manageProductLineBtn.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         manageProductLineBtn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, "PRODUCT_LINE");
             setActiveButton(manageProductLineBtn, manageInventoryBtn);
         });
-        
+
         centerPanel.add(manageInventoryBtn);
         centerPanel.add(manageProductLineBtn);
 
         // Right panel - Logout button
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightPanel.setOpaque(false);
+        
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setBackground(new Color(192, 57, 43));
         logoutBtn.setForeground(Color.WHITE);
+        logoutBtn.setFont(new Font("Calisto MT", Font.PLAIN, 18));
         logoutBtn.setFocusPainted(false);
-        logoutBtn.setBorderPainted(false);
+        logoutBtn.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
         logoutBtn.addActionListener(e -> {
-            productLineController.save(); 
+            productLineController.save();
             dispose();
             new Login(new LoginController()).setVisible(true);
         });
-        
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        rightPanel.setOpaque(false);
+
         rightPanel.add(logoutBtn);
 
         // Add all panels to top panel
@@ -109,20 +135,20 @@ public class SupervisorFrame extends JFrame {
         topPanel.add(centerPanel, BorderLayout.CENTER);
         topPanel.add(rightPanel, BorderLayout.EAST);
 
-        add(topPanel, BorderLayout.NORTH);
-
-
         // Main content panel
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
-        mainScrollPane = new JScrollPane(mainContentPanel);
-        manageInventoryBtn.setFocusPainted(false);
-        manageInventoryBtn.setBorderPainted(false);
-        manageInventoryBtn.setContentAreaFilled(true);
-
-        manageProductLineBtn.setFocusPainted(false);
-        manageProductLineBtn.setBorderPainted(false);
-        manageProductLineBtn.setContentAreaFilled(true);
+        mainContentPanel.setBackground(new Color(245, 245, 245));
+        
+        // Create a wrapper panel with padding
+        JPanel contentWrapper = new JPanel(new BorderLayout());
+        contentWrapper.setBackground(new Color(245, 245, 245));
+        contentWrapper.add(mainContentPanel, BorderLayout.CENTER);
+        
+        mainScrollPane = new JScrollPane(contentWrapper);
+        mainScrollPane.setBorder(null);
+        mainScrollPane.getViewport().setBackground(new Color(245, 245, 245));
+        
         // Layout main frame
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
@@ -130,7 +156,6 @@ public class SupervisorFrame extends JFrame {
     }
 
     private void initPanels() {
-        // InventoryPanel inventoryPanel = new InventoryPanel(itemController);
         ProductLinePanel productLinePanel = new ProductLinePanel(productLineController);
         mainContentPanel.add(inventoryPanel, "INVENTORY");
         mainContentPanel.add(productLinePanel, "PRODUCT_LINE");

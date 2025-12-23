@@ -67,6 +67,7 @@ public class ProductionLine_thread extends Thread {
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)) {
                     continue;
                 }
+                task.setStatus(inventory.models.enums.TaskStatus.IN_PROGRESS);
                 task.addPercentage(productLine.getEfficiency() * 100 / task.getQuantity());
                 TaskService.updateTask(task);
                 if (task.getPercentage() >= 100.0) {
