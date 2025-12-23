@@ -1,6 +1,7 @@
 package inventory.gui.supervisor_frame;
 
 import inventory.controllers.InvenManageController;
+import inventory.models.Item;
 import java.awt.*;
 import javax.swing.*;
 
@@ -11,15 +12,19 @@ public class AddItemFrame extends JFrame {
     private InvenManageController controller;
     private Runnable onSuccess;
 
-    private final Color BG = new Color(236,240,241);
-    private final Color PRIMARY = new Color(44,62,80);
-    private final Color ACCENT = new Color(26,188,156);
+    private final Color BG = new Color(236, 240, 241);
+    private final Color PRIMARY = new Color(44, 62, 80);
+    private final Color ACCENT = new Color(26, 188, 156);
+    private Robot robot;
+    private Timer lockTimer;
+    private Item item;
 
-    public AddItemFrame(InvenManageController controller, Runnable onSuccess) {
+    public AddItemFrame(InvenManageController controller, Runnable onSuccess, Item item) {
         this.controller = controller;
         this.onSuccess = onSuccess;
+        this.item = item;
 
-        setTitle("Add New Item");
+        setTitle(item == null ? "Add Item" : "Update Item");
         setSize(400, 420);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -27,27 +32,35 @@ public class AddItemFrame extends JFrame {
         setLayout(new BorderLayout());
 
         initUI();
+
+        // Stop locking when frame closes
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                if (lockTimer != null)
+                    lockTimer.stop();
+            }
+        });
     }
 
     private void initUI() {
 
-        JLabel title = new JLabel("Add Item");
+        JLabel title = new JLabel(item == null ? "Add Item" : "Update Item");
         title.setFont(new Font("Calisto MT", Font.BOLD, 24));
         title.setForeground(PRIMARY);
         title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(15,0,15,0));
+        title.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         add(title, BorderLayout.NORTH);
 
-
-        JPanel form = new JPanel(new GridLayout(5,2,10,10));
+        JPanel form = new JPanel(new GridLayout(5, 2, 10, 10));
         form.setBackground(BG);
-        form.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        nameField = createField();
-        categoryField = createField();
-        priceField = createField();
-        qtyField = createField();
-        minQtyField = createField();
+        nameField = createField(item == null ? "" : item.getName());
+        categoryField = createField(item == null ? "" : item.getCategory());
+        priceField = createField(item == null ? "" : String.valueOf(item.getPrice()));
+        qtyField = createField(item == null ? "" : String.valueOf(item.getQuantity()));
+        minQtyField = createField(item == null ? "" : String.valueOf(item.getMinQuantity()));
 
         form.add(new JLabel("Name:"));
         form.add(nameField);
@@ -62,7 +75,6 @@ public class AddItemFrame extends JFrame {
 
         add(form, BorderLayout.CENTER);
 
-
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottom.setBackground(BG);
 
@@ -76,35 +88,35 @@ public class AddItemFrame extends JFrame {
         bottom.add(saveBtn);
         add(bottom, BorderLayout.SOUTH);
 
-        nameField.addActionListener(e->{
+        nameField.addActionListener(e -> {
             if (!nameField.getText().equals(""))
                 categoryField.requestFocus();
-            });
-        categoryField.addActionListener(e->{
+        });
+        categoryField.addActionListener(e -> {
             if (!categoryField.getText().equals(""))
                 priceField.requestFocus();
         });
-        priceField.addActionListener(e->{
+        priceField.addActionListener(e -> {
             if (!priceField.getText().equals(""))
                 qtyField.requestFocus();
-            });
-        qtyField.addActionListener(e->{
-            if (!qtyField.getText().equals("")){
+        });
+        qtyField.addActionListener(e -> {
+            if (!qtyField.getText().equals("")) {
                 minQtyField.requestFocus();
             }
         });
-        minQtyField.addActionListener(e->{
+        minQtyField.addActionListener(e -> {
             if (!minQtyField.getText().equals(""))
                 saveBtn.doClick();
-            });
+        });
 
         cancelBtn.addActionListener(e -> dispose());
 
         saveBtn.addActionListener(e -> saveItem());
     }
 
-    private JTextField createField() {
-        JTextField f = new JTextField();
+    private JTextField createField(String s) {
+        JTextField f = new JTextField(s);
         f.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         return f;
     }
@@ -113,7 +125,7 @@ public class AddItemFrame extends JFrame {
         btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(8,15,8,15));
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
     }
 
     private void saveItem() {
@@ -124,14 +136,24 @@ public class AddItemFrame extends JFrame {
             int qty = Integer.parseInt(qtyField.getText().trim());
             int minQty = Integer.parseInt(minQtyField.getText().trim());
 
-            if (name.isEmpty() || category.isEmpty()|| price <= 0 || qty <= 0 || minQty <= 0) {
+            if (name.isEmpty() || category.isEmpty() || price <= 0 || qty <= 0 || minQty < 0) {
                 JOptionPane.showMessageDialog(this, "Fill a valid items");
                 return;
             }
-
-            controller.add_item(name, category, price, qty, minQty);
-            onSuccess.run(); // تحديث الجدول
-            dispose();
+            if (item == null) {
+                boolean sucsses = controller.add_item(name, category, price, qty, minQty);
+                if (!sucsses) {
+                    JOptionPane.showMessageDialog(this, "Quantity must be greater than or equal to Min Quantity");
+                    return;
+                }
+                onSuccess.run(); // تحديث الجدول
+                dispose();
+            } else {
+                controller.update_item(item.getId(),name, category, price, qty, minQty);
+                onSuccess.run(); 
+                dispose();
+                
+            }
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format");

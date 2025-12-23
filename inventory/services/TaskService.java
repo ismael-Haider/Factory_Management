@@ -37,6 +37,7 @@ public class TaskService {
                     .addQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100));
         }
         ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
+        ProductLineService.getProductLineById(task.getProductLineId()).get().stop();
         if (task.getStatus().equals(TaskStatus.IN_QUEUE)) {
             task.setStatus(TaskStatus.CANCELLED);
             return;
@@ -54,9 +55,10 @@ public class TaskService {
             double q = 0;
             for (Task t : cancelled) {
                 q = (t.getQuantity() * t.getPercentage() / 100.0);
-                System.out.println((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
+                // System.out.println((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
                 task.addPercentage((Math.min(task.getQuantity(), q) * 100 / task.getQuantity()));
                 t.setPercentage((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
+                task.setStatus(TaskStatus.IN_QUEUE);
                 updateTask(task);
                 updateTask(t);
                 FinishedProductService.reduceQuantity(task.getProductId(), (int) Math.min(task.getQuantity(), q));
@@ -65,7 +67,7 @@ public class TaskService {
 
         if (task.getPercentage() == 100) {
             finishTask(task.getId());
-            System.out.println("hi");
+            // System.out.println("hi");
             ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
 
             return;
@@ -75,7 +77,7 @@ public class TaskService {
             ItemService.getItemById(i).get()
                     .reduceQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0));
         }
-        // task.setStatus(inventory.models.enums.TaskStatus.IN_QUEUE);
+        task.setStatus(inventory.models.enums.TaskStatus.IN_QUEUE);
         // productLineService.getProductLineById(task.getProductLineId()).get().addTask(task.getId());
         // // add task to product line task.getProductLineId()
     }

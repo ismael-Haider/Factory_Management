@@ -89,7 +89,9 @@ public class Main {
                 TaskService.getAllTasks().forEach(System.out::println);
             }
             else if("pro".equals(command)){
-                ProductLineService.getAllProductLines().forEach(System.out::println);
+                for (ProductLine pr : ProductLineService.getAllProductLines()) {
+                    System.out.println(pr + " " + pr.getEfficiency() + " "+ pr.getTaskQueue() + "");
+                }
             } else if ("add_task".equals(command)){
                 System.out.println("1- new");
                 List<Product> p=ProductService.getAllProducts();
@@ -146,6 +148,15 @@ public class Main {
                     int plid=scanner.nextInt();
                     TaskService.addTask(new Task(pr.getId(),q ,"client_bitch",LocalDate.now(),LocalDate.now().plusDays(1),plid));
                 }
+            }
+            else if ("products".equals(command)) {
+                    List<Product> p = ProductService.getAllProducts();
+                    for (Product product : p) {
+                        System.out.println(product);
+                    }
+
+
+
             } else if ("exit".equals(command)) {
                 // taskProcessor.stopProcessing();
                 inventoryUpdater.stopUpdating();

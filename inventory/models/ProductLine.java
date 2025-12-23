@@ -97,6 +97,6 @@ public class ProductLine {
 
     @Override
     public String toString() {
-        return "ProductLine{" + "id=" + id + ", name='" + name + '\'' + ", status=" + status + ", efficiency=" + efficiency + ", taskQueue=" + taskQueue + '}';
+        return "name: "+name+", status: "+status;
     }
 }
