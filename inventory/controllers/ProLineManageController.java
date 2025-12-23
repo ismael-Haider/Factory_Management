@@ -16,11 +16,14 @@ public class ProLineManageController {
         Task newTask = new Task(productId, quantity, clientName, startDate, deliveredDate, productLineId);
         TaskService.addTask(newTask);
     }
-    public void addTask(String name, HashMap<Integer, Integer> itemQuantities, int quantity, String clientName, LocalDate startDate, LocalDate deliveredDate,
+
+    public void addTask(String name, HashMap<Integer, Integer> itemQuantities, int quantity, String clientName,
+            LocalDate startDate, LocalDate deliveredDate,
             int productLineId) {
-        addProduct(name,itemQuantities );
+        addProduct(name, itemQuantities);
         clientName = clientName.toLowerCase();
-        Task newTask = new Task(ProductService.getAllProducts().getLast().getId(), quantity, clientName, startDate, deliveredDate, productLineId);
+        Task newTask = new Task(ProductService.getAllProducts().getLast().getId(), quantity, clientName, startDate,
+                deliveredDate, productLineId);
         TaskService.addTask(newTask);
     }
 
@@ -33,17 +36,15 @@ public class ProLineManageController {
         return true;
     }
 
-
-    public boolean checkProductHashMapAvailability(HashMap<Integer, Integer> itemQuantities,int quantity){
-        for (Integer itemId: itemQuantities.keySet()){
+    public boolean checkProductHashMapAvailability(HashMap<Integer, Integer> itemQuantities, int quantity) {
+        for (Integer itemId : itemQuantities.keySet()) {
             Item item = ItemService.getItemById(itemId).get();
-            if (item.getQuantity() < itemQuantities.get(itemId)*quantity){
+            if (item.getQuantity() < itemQuantities.get(itemId) * quantity) {
                 return false;
             }
         }
         return true;
     }
-
 
     public List<ProductLine> viewAllProductLines() {
         return ProductLineService.getAllProductLines();
@@ -61,7 +62,7 @@ public class ProLineManageController {
         return ItemService.getAllItems();
     }
 
-    // here why i need this function 
+    // here why i need this function
     public List<Item> viewAvaleableItems() {
         List<Item> allItems = ItemService.getAllItems();
         List<Item> newList = new ArrayList<>();
@@ -72,39 +73,41 @@ public class ProLineManageController {
         }
         return newList;
     }
-    
-    
 
-// search on item by name on it and return the id for the hash map for the produc 
+    // search on item by name on it and return the id for the hash map for the
+    // produc
     public int searchByName(String name) {
         List<Item> items = ItemService.getAllItems();
         for (Item item : items) {
             if (item.getName().equalsIgnoreCase(name)) {
-                    return item.getId();
+                return item.getId();
             }
         }
         return 0;
     }
 
-
-        public int searchProductByName(String name) {
+    public int searchProductByName(String name) {
         List<Product> ps = ProductService.getAllProducts();
         for (Product p : ps) {
             if (p.getName().equalsIgnoreCase(name)) {
-                    return p.getId();
+                return p.getId();
             }
         }
         return 0;
     }
+
     /**
      * Check if a product with the given name already exists (case-insensitive).
+     * 
      * @param name product name to check
      * @return true if exists, false otherwise
      */
     public boolean productNameExists(String name) {
-        if (name == null) return false;
+        if (name == null)
+            return false;
         String q = name.trim();
-        if (q.isEmpty()) return false;
+        if (q.isEmpty())
+            return false;
         List<Product> products = ProductService.getAllProducts();
         for (Product p : products) {
             if (p.getName() != null && p.getName().equalsIgnoreCase(q))
@@ -113,12 +116,10 @@ public class ProLineManageController {
         return false;
     }
 
-
     public void addProduct(String name, HashMap<Integer, Integer> itemQuantities) {
         name = name.toLowerCase();
         ProductService.addProduct(new Product(name, itemQuantities));
     }
-
 
     public List<Task> viewTasksByProductLine(int productLineId) {
         List<Task> allTasks = TaskService.getAllTasks();
@@ -138,14 +139,13 @@ public class ProLineManageController {
         return newList;
     }
 
-    public Product searchProductById(int id){
+    public Product searchProductById(int id) {
         return ProductService.getProductById(id).get();
     }
 
-    public ProductLine searchProductLineById(int id){
+    public ProductLine searchProductLineById(int id) {
         return ProductLineService.getProductLineById(id).get();
     }
-
 
     public List<Task> viewTasksByStatus(TaskStatus status) {
         List<Task> allTasks = TaskService.getAllTasks();
@@ -222,6 +222,29 @@ public class ProLineManageController {
         return ProductService.getProductById(mostRequestedId).get();
     }
 
+    public HashMap<ProductLine,List<FinishedProduct>> viewFinishedProductsByAllProductLine(){
+        HashMap<ProductLine, List<FinishedProduct>> map = new HashMap<>();
+        List<ProductLine> productLines = ProductLineService.getAllProductLines();
+        System.out.println(productLines);
+        for (ProductLine pl : productLines) {
+            List<FinishedProduct> fininshedproductsInLine = new ArrayList<>();
+            List<Task> tasks = viewTasksByProductLine(pl.getId());
+            
+            tasks=tasks.stream().filter(t->(t.getStatus().equals(TaskStatus.FINISHED)||t.getStatus().equals(TaskStatus.CANCELLED))&&
+                !t.isDelivered()&&
+                t.getPercentage()>0).toList();
+                
+            for (Task t:tasks){
+                FinishedProduct p = new FinishedProduct(t.getProductId(), ProductService.getProductById(t.getProductId()).get().getName(),(int)(t.getQuantity()*t.getPercentage()/100.0));
+                fininshedproductsInLine.add(p);
+            }
+            if (!fininshedproductsInLine.isEmpty()) {
+                map.put(pl, fininshedproductsInLine);
+            }
+        }
+        return map;
+    }
+
     public void save() {
         TaskService.saveTasks();
         FinishedProductService.saveFinishedProducts();
@@ -230,11 +253,12 @@ public class ProLineManageController {
         ProductService.saveProducts();
         UserService.saveUsers();
     }
+
     public void exit() {
         save();
-        ProductLineService.getAllProductLines().forEach(pl-> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
+        ProductLineService.getAllProductLines()
+                .forEach(pl -> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
         System.exit(0);
     }
-
 
 }

@@ -93,6 +93,7 @@ public class SupervisorFrame extends JFrame {
         manageInventoryBtn.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         manageInventoryBtn.setForeground(Color.WHITE);
         manageInventoryBtn.setBackground(ACTIVE_COLOR);
+        manageInventoryBtn.setFocusable(false);
         manageInventoryBtn.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         manageInventoryBtn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, "INVENTORY");
@@ -103,6 +104,7 @@ public class SupervisorFrame extends JFrame {
         manageProductLineBtn.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         manageProductLineBtn.setForeground(Color.WHITE);
         manageProductLineBtn.setBackground(INACTIVE_COLOR);
+        manageProductLineBtn.setFocusable(false);
         manageProductLineBtn.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         manageProductLineBtn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, "PRODUCT_LINE");
