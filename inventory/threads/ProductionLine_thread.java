@@ -34,6 +34,8 @@ public class ProductionLine_thread extends Thread {
                 inventory.models.Task task = TaskService.getTaskById(taskId).get();
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)) {
                     productLine.pollTask();
+                    // add update after edit the task queue
+                    ProductLineService.updateProductLine(productLine);
                     continue;
                 }
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)) {
@@ -41,7 +43,6 @@ public class ProductionLine_thread extends Thread {
                     ProductLineService.updateProductLine(productLine);
                     continue;
                 }
-                System.out.println(task.toCSV());
                 task.setStatus(inventory.models.enums.TaskStatus.IN_PROGRESS);
                 productLine.start();
                 task.addPercentage(productLine.getEfficiency() * 100 / task.getQuantity());
@@ -59,15 +60,16 @@ public class ProductionLine_thread extends Thread {
                 int taskId = productLine.peekTask();
                 inventory.models.Task task = TaskService.getTaskById(taskId).get();
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.FINISHED)) {
-
                     productLine.pollTask();
                     ProductLineService.updateProductLine(productLine);
                     continue;
                 }
                 if (task.getStatus().equals(inventory.models.enums.TaskStatus.CANCELLED)) {
+                    productLine.pollTask();
+                    // here update productLine 
+                    ProductLineService.updateProductLine(productLine);
                     continue;
                 }
-                task.setStatus(inventory.models.enums.TaskStatus.IN_PROGRESS);
                 task.addPercentage(productLine.getEfficiency() * 100 / task.getQuantity());
                 TaskService.updateTask(task);
                 if (task.getPercentage() >= 100.0) {
@@ -76,6 +78,11 @@ public class ProductionLine_thread extends Thread {
                     productLine.pollTask();
                     TaskService.updateTask(task);
                 }
+                ProductLineService.updateProductLine(productLine);
+
+            }// add this to check 
+            else if(productLine.isQueueEmpty()){
+                productLine.setStatus(inventory.models.enums.ProductLineStatus.STOP);
                 ProductLineService.updateProductLine(productLine);
             }
             try {

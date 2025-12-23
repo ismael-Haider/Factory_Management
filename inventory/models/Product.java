@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Product {
-    static int counter=0;
+    public static int counter=0;
     private int id;
     private String name;
     private Map<Integer, Integer> itemQuantities; // Item ID -> quantity needed
