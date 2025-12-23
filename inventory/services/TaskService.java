@@ -9,6 +9,7 @@ import java.util.Optional;
 import inventory.config.Constants;
 import inventory.csv.CsvReader;
 import inventory.csv.CsvWriter;
+import inventory.models.Item;
 import inventory.models.Task;
 import inventory.models.enums.TaskStatus;
 import inventory.services.FinishedProductService;
@@ -23,8 +24,7 @@ public class TaskService {
     public static synchronized void finishTask(int id) {
         getTaskById(id).ifPresent(task -> {
             task.setStatus(TaskStatus.FINISHED);
-            System.out.println(task.getStatus());
-            // updateTask(task);
+            updateTask(task);
             FinishedProductService.addFinishedProduct(task.getProductId(), task.getQuantity());
         });
     }
@@ -48,10 +48,15 @@ public class TaskService {
     }
 
     public static synchronized void addTask(Task task) {
-        tasks.add(task);
+        if (!ProductService.getProductById(task.getProductId()).isPresent()) {
+            throw new IllegalArgumentException("Product with ID " + task.getProductId() + " does not exist.");
+        }
+
         List<Task> cancelled = tasks.stream().filter(t -> t.getStatus() == TaskStatus.CANCELLED
                 && t.getProductId() == task.getProductId() && t.getPercentage() > 0).toList();
+        System.out.println(cancelled);
         if (cancelled.size() > 0) {
+            System.out.println("hello bitch");
             double q = 0;
             for (Task t : cancelled) {
                 q = (t.getQuantity() * t.getPercentage() / 100.0);
@@ -64,15 +69,26 @@ public class TaskService {
                 FinishedProductService.reduceQuantity(task.getProductId(), (int) Math.min(task.getQuantity(), q));
             }
         }
-
+        HashMap<Integer, Integer> items = ProductService.getProductById(task.getProductId()).get().getItemQuantities();
+        for (Integer i : items.keySet()) {
+            Optional<Item> itemOpt = ItemService.getItemById(i);
+            if (itemOpt.isEmpty()) {
+                throw new IllegalArgumentException("Item with ID " + i + " does not exist.");
+            } 
+            Item item = itemOpt.get();
+            double required = items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0;
+            if (item.getQuantity() < required) {
+                throw new IllegalArgumentException("Insufficient quantity for item " + item.getName() + ". Required: " + required + ", Available: " + item.getQuantity());
+            }
+        }
+        
+        tasks.add(task);
         if (task.getPercentage() == 100) {
             finishTask(task.getId());
             // System.out.println("hi");
             ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
-
             return;
         }
-        HashMap<Integer, Integer> items = ProductService.getProductById(task.getProductId()).get().getItemQuantities();
         for (Integer i : items.keySet()) {
             ItemService.getItemById(i).get()
                     .reduceQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0));

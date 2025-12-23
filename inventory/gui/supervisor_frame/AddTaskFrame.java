@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.*;
@@ -59,7 +60,8 @@ public class AddTaskFrame extends JFrame {
 
         // ================= PRODUCT COMBO =================
         productBox = new JComboBox<>();
-        productBox.addItem(new Product("New", new HashMap<>())); // كائن جديد يمثل خيار New
+        productBox.addItem(new Product("New", new HashMap<>()));
+        Product.counter--; // كائن جديد يمثل خيار New
         List<Product> products = controller.viewAllProducts();
         for (Product p : products) {
             productBox.addItem(p);
@@ -97,7 +99,6 @@ public class AddTaskFrame extends JFrame {
                     productBox.setSelectedIndex(0);
                     return;
                 }
-                // controller.addProduct(newProductName, newProductItems_id_qty);
                 System.out.println(newProductName + "" + newProductItems_id_qty);
             } else {
                 HashMap<Integer, Integer> totalQty = selected.getItemQuantities();
@@ -105,11 +106,15 @@ public class AddTaskFrame extends JFrame {
                 newProductName = selected.getName();
                 System.out.println(newProductName + "" + newProductItems_id_qty);
             }
-            selected.setName(newProductName); // تحديث اسم خيار New
+            selected.setName(newProductName);
             productBox.repaint();
         });
 
         // ================= PRODUCT LINE COMBO =================
+        if (controller.viewAllProductLines().isEmpty()) {
+            productBox.addItem(new Product("No Product Line", new HashMap<>()));
+            Product.counter--;
+        }
         lineBox = new JComboBox<>(controller.viewAllProductLines().toArray(new ProductLine[0]));
 
         qtyField = createField();
@@ -209,6 +214,7 @@ public class AddTaskFrame extends JFrame {
     // ================= SAVE LOGIC =================
     private void saveTask() {
         try {
+
             ProductLine pl = (ProductLine) lineBox.getSelectedItem();
             System.out.println(pl);
             int quantity = Integer.parseInt(qtyField.getText().trim());
@@ -217,29 +223,45 @@ public class AddTaskFrame extends JFrame {
             System.out.println(client);
             LocalDate start = LocalDate.parse(startDateField.getText().trim());
             System.out.println(start);
-            LocalDate end = LocalDate.parse(endDateField.getText().trim());
-            System.out.println(end);
+            String eDate = endDateField.getText().trim();
 
+            if (eDate.equals("yyyy-mm-dd") || eDate.equals("")) {
+                JOptionPane.showMessageDialog(this, "End Date is required");
+                return;
+            }
+            LocalDate end = LocalDate.parse(endDateField.getText().trim());
+            if (end.isBefore(start)) {
+                JOptionPane.showMessageDialog(this, "End Date cannot be before Start Date");
+                return;
+            }
+            
             Product selected = (Product) productBox.getSelectedItem();
             System.out.println(selected);
 
-            if ("New".equals(selected.getName())) {
-                // منتج جديد -> أرسل للـ controller مع عناصره
+            
+
+            // If the product name does not already exist, create it; otherwise use existing product id
+            if (!controller.productNameExists(newProductName)) {
                 controller.addTask(newProductName, newProductItems_id_qty, quantity, client, start, end, pl.getId());
                 System.out.println("created");
-            } else if (!selected.getName().equals("New")) {
+            } else {
                 controller.addTask(selected.getId(), quantity, client, start, end, pl.getId());
             }
 
-            // onSuccess.run();
+            onSuccess.run();
             dispose();
-        } catch (Exception ex) {
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-MM-dd");
+            return;
+        }
+
+        catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Invalid input! " + ex.getMessage());
 
         }
     }
 
-    // ================= DIALOG لإدخال عناصر المنتج الجديد =================
+    // dialog to create new product
     private HashMap<Integer, Integer> openNewProductDialog() {
         DefaultTableModel model = new DefaultTableModel(new String[] { "Item Name", "Quantity" }, 0);
         JTable table = new JTable(model);

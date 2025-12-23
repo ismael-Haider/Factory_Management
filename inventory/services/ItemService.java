@@ -18,10 +18,11 @@ public class ItemService {
 
     ///kais
     public static synchronized void addItem(Item item) {
+        String newName = item.getName() == null ? "" : item.getName().trim();
         for (Item i : items) {
-            if (item.getName().equals(i.getName())) {
+            String existingName = i.getName() == null ? "" : i.getName().trim();
+            if (newName.equalsIgnoreCase(existingName)) {
                 i.addQuantity(item.getQuantity());
-                Item.counter--;
                 return;
             }
         }
@@ -33,7 +34,9 @@ public class ItemService {
     }
 
     public static synchronized Optional<Item> getItemByName(String name) {
-        return items.stream().filter(item -> item.getName().equals(name)).findFirst();
+        if (name == null) return Optional.empty();
+        String q = name.trim();
+        return items.stream().filter(item -> item.getName() != null && item.getName().equalsIgnoreCase(q)).findFirst();
     }
 
     public static synchronized List<Item> getAllItems() {

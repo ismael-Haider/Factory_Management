@@ -86,6 +86,16 @@ public class ProLineManageController {
         return 0;
     }
 
+
+        public int searchProductByName(String name) {
+        List<Product> ps = ProductService.getAllProducts();
+        for (Product p : ps) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                    return p.getId();
+            }
+        }
+        return 0;
+    }
     /**
      * Check if a product with the given name already exists (case-insensitive).
      * @param name product name to check

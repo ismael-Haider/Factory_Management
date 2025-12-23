@@ -12,20 +12,17 @@ public class TaskCellRenderer extends DefaultTableCellRenderer {
             boolean isSelected, boolean hasFocus,
             int row, int column) {
 
-
         Component c = super.getTableCellRendererComponent(
                 table, value, isSelected, hasFocus, row, column);
-
 
         if (column == 7 && value != null) {
 
             String status = value.toString();
 
-
             if (!isSelected) {
                 switch (status) {
                     case "IN_QUEUE" -> {
-                        c.setBackground(new Color(52, 152, 219));
+                        c.setBackground(Color.darkGray);
                         c.setForeground(Color.WHITE);
                     }
                     case "CANCELLED" -> {
@@ -35,6 +32,11 @@ public class TaskCellRenderer extends DefaultTableCellRenderer {
                     case "FINISHED" -> {
                         c.setBackground(new Color(46, 204, 113));
                         c.setForeground(Color.WHITE);
+                    }
+                    case "IN_PROGRESS"->{
+                        c.setBackground(new Color(200, 220, 255)); // Light red
+                        c.setForeground(new Color(41, 128, 185));
+                        break;
                     }
                     default -> {
                         c.setBackground(Color.WHITE);

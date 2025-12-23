@@ -14,9 +14,13 @@ public class ProductLinePanel extends JPanel {
 
     private JTable table;
     private TaskTableModel model;
-    private JComboBox<String> filterBox;
+    private JComboBox<String> filterBoxbyTaskStatus;
     private JButton cancelBtn, addTaskBtn;
     private ProLineManageController controller;
+    private JComboBox<String> searchbyProductLineField; 
+    private JComboBox<String> searchOnTasksbyProductName;
+    
+
 
     public ProductLinePanel(ProLineManageController controller) {
         this.controller = controller;
@@ -55,12 +59,13 @@ public class ProductLinePanel extends JPanel {
         filterLabel.setFont(filterLabel.getFont().deriveFont(Font.BOLD, 13f));
         filterLabel.setForeground(new Color(60, 60, 60));
 
-        filterBox = new JComboBox<>(new String[] { "ALL", "IN_QUEUE", "FINISHED", "CANCELLED" });
-        filterBox.setPreferredSize(new Dimension(180, 35));
-        filterBox.addActionListener(e -> refreshTable());
+        filterBoxbyTaskStatus = new JComboBox<>(new String[] { "ALL", "IN_QUEUE", "FINISHED", "CANCELLED" });
+        filterBoxbyTaskStatus.setPreferredSize(new Dimension(180, 35));
+        filterBoxbyTaskStatus.addActionListener(e -> refreshTable());
 
         filterPanel.add(filterLabel, BorderLayout.NORTH);
-        filterPanel.add(filterBox, BorderLayout.CENTER);
+        filterPanel.add(filterBoxbyTaskStatus, BorderLayout.CENTER);
+
 
         top.add(filterPanel);
 
@@ -115,8 +120,8 @@ public class ProductLinePanel extends JPanel {
                 String status = value.toString();
                 switch (status) {
                     case "IN_QUEUE":
-                        label.setBackground(new Color(200, 220, 255)); // Light blue
-                        label.setForeground(new Color(41, 128, 185));
+                        label.setBackground(Color.gray); // Light blue
+                        label.setForeground(Color.WHITE);
                         break;
                     case "FINISHED":
                         label.setBackground(new Color(200, 255, 200)); // Light green
@@ -125,6 +130,10 @@ public class ProductLinePanel extends JPanel {
                     case "CANCELLED":
                         label.setBackground(new Color(255, 200, 200)); // Light red
                         label.setForeground(new Color(192, 57, 43));
+                        break;
+                    case "IN_PROGRESS":
+                        label.setBackground(new Color(200, 220, 255)); // Light red
+                        label.setForeground(new Color(41, 128, 185));
                         break;
                     default:
                         label.setBackground(Color.WHITE);
@@ -238,7 +247,7 @@ public class ProductLinePanel extends JPanel {
         model.setRowCount(0);
 
         List<Task> tasks;
-        String filter = filterBox.getSelectedItem().toString();
+        String filter = filterBoxbyTaskStatus.getSelectedItem().toString();
 
         if ("ALL".equals(filter)) {
             tasks = controller.viewAllTasks();
