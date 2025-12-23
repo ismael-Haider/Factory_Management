@@ -1,6 +1,6 @@
 package inventory;
 
-import inventory.config.Constants;
+
 import inventory.controllers.*;
 import inventory.gui.*;
 import inventory.models.*;
@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Constants a=new Constants();
+        // Constants a=new Constants();
         
         // Initialize services in correct order
         ItemService.init();

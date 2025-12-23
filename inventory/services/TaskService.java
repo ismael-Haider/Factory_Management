@@ -12,7 +12,6 @@ import inventory.csv.CsvWriter;
 import inventory.models.Item;
 import inventory.models.Task;
 import inventory.models.enums.TaskStatus;
-import inventory.services.FinishedProductService;
 
 public class TaskService {
     private static List<Task> tasks = new ArrayList<>();

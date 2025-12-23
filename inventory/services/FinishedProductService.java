@@ -1,6 +1,6 @@
 package inventory.services;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +9,7 @@ import inventory.config.Constants;
 import inventory.csv.CsvReader;
 import inventory.csv.CsvWriter;
 import inventory.models.FinishedProduct;
-import inventory.utils.Exceptions;
+
 
 public class FinishedProductService {
     private static List<FinishedProduct> finishedProducts = new ArrayList<>();

@@ -8,7 +8,6 @@ import java.util.Optional;
 import inventory.config.Constants;
 import inventory.csv.CsvReader;
 import inventory.csv.CsvWriter;
-import inventory.models.Item;
 import inventory.models.Product;
 
 public class ProductService {

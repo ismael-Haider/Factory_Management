@@ -2,7 +2,6 @@ package inventory.gui.supervisor_frame;
 
 import inventory.controllers.ProLineManageController;
 import inventory.models.Task;
-import inventory.models.enums.TaskStatus;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
@@ -17,8 +16,8 @@ public class ProductLinePanel extends JPanel {
     private JComboBox<String> filterBoxbyTaskStatus;
     private JButton cancelBtn, addTaskBtn;
     private ProLineManageController controller;
-    private JComboBox<String> searchbyProductLineField; 
-    private JComboBox<String> searchOnTasksbyProductName;
+    private JComboBox<String> searchOnTasksbyProductLineID;
+    private JComboBox<String> searchOntasksbyProductName;
     
 
 
@@ -59,6 +58,7 @@ public class ProductLinePanel extends JPanel {
         filterLabel.setFont(filterLabel.getFont().deriveFont(Font.BOLD, 13f));
         filterLabel.setForeground(new Color(60, 60, 60));
 
+        
         filterBoxbyTaskStatus = new JComboBox<>(new String[] { "ALL", "IN_QUEUE", "FINISHED", "CANCELLED" });
         filterBoxbyTaskStatus.setPreferredSize(new Dimension(180, 35));
         filterBoxbyTaskStatus.addActionListener(e -> refreshTable());
@@ -66,9 +66,30 @@ public class ProductLinePanel extends JPanel {
         filterPanel.add(filterLabel, BorderLayout.NORTH);
         filterPanel.add(filterBoxbyTaskStatus, BorderLayout.CENTER);
 
+        // ===== Filter by Product Line =====
+        JPanel lineFilterPanel = new JPanel(new BorderLayout(0, 5));
+        lineFilterPanel.setOpaque(false);
 
+        JLabel lineLabel = new JLabel("Filter by Product Line:");
+        lineLabel.setFont(lineLabel.getFont().deriveFont(Font.BOLD, 13f));
+
+        searchOnTasksbyProductLineID = new JComboBox<>();
+        searchOnTasksbyProductLineID.setPreferredSize(new Dimension(200, 35));
+        searchOnTasksbyProductLineID.addItem("ALL");
+
+        controller.viewAllProductLines()
+                .forEach(pl -> searchOnTasksbyProductLineID.addItem(
+                        pl.getId() + " - " + pl.getName()
+                ));
+
+        searchOnTasksbyProductLineID.addActionListener(e -> refreshTable());
+
+        lineFilterPanel.add(lineLabel, BorderLayout.NORTH);
+        lineFilterPanel.add(searchOnTasksbyProductLineID, BorderLayout.CENTER);
+
+        // أضفهم للـ top
         top.add(filterPanel);
-
+        top.add(lineFilterPanel);
         return top;
     }
 
@@ -120,8 +141,8 @@ public class ProductLinePanel extends JPanel {
                 String status = value.toString();
                 switch (status) {
                     case "IN_QUEUE":
-                        label.setBackground(Color.gray); // Light blue
-                        label.setForeground(Color.WHITE);
+                        label.setBackground(Color.YELLOW); // Light blue
+                        label.setForeground(new Color(41, 128, 185));
                         break;
                     case "FINISHED":
                         label.setBackground(new Color(200, 255, 200)); // Light green
@@ -131,8 +152,9 @@ public class ProductLinePanel extends JPanel {
                         label.setBackground(new Color(255, 200, 200)); // Light red
                         label.setForeground(new Color(192, 57, 43));
                         break;
+                    
                     case "IN_PROGRESS":
-                        label.setBackground(new Color(200, 220, 255)); // Light red
+                        label.setBackground(new Color(52, 152, 219));// Light blue
                         label.setForeground(new Color(41, 128, 185));
                         break;
                     default:
@@ -246,17 +268,26 @@ public class ProductLinePanel extends JPanel {
 
         model.setRowCount(0);
 
-        List<Task> tasks;
-        String filter = filterBoxbyTaskStatus.getSelectedItem().toString();
+        List<Task> tasks = controller.viewAllTasks();
+        String statusFilter = filterBoxbyTaskStatus.getSelectedItem().toString();
+        if (!"ALL".equals(statusFilter)) {
+            tasks = tasks.stream()
+                    .filter(t -> t.getStatus().name().equals(statusFilter))
+                    .toList();
+        }
 
-        if ("ALL".equals(filter)) {
-            tasks = controller.viewAllTasks();
-        } else {
-            tasks = controller.viewTasksByStatus(TaskStatus.valueOf(filter));
+        // فلترة بالخط
+        String lineFilter = (String) searchOnTasksbyProductLineID.getSelectedItem();
+        if (!"ALL".equals(lineFilter)) {
+            int lineId = Integer.parseInt(lineFilter.split(" - ")[0]);
+            tasks = tasks.stream()
+                    .filter(t -> t.getProductLineId() == lineId)
+                    .toList();
         }
 
         int rowToSelect = -1;
         int rowIndex = 0;
+        model.setRowCount(0);
 
         for (Task t : tasks) {
             model.addRow(new Object[] {
@@ -405,7 +436,6 @@ class TaskCellRenderer extends DefaultTableCellRenderer {
                 }
             }
         }
-
         return c;
     }
 }
