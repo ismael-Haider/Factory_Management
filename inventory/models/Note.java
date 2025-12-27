@@ -13,7 +13,7 @@ public class Note{
     LocalDateTime ldt;
 
     public Note(String type){
-        type =this.type;
+        this.type = type;
     }
     public void newNote(String note ,LocalDateTime ldt){
         this.id=++counter;
@@ -26,7 +26,7 @@ public class Note{
         this.ldt = ldt;
     }
 
-    public void newRating(int rating,int id){
+    public void newRating(int id,int rating){
         this.rating=rating;
         this.id=id;
     }
@@ -67,7 +67,7 @@ public class Note{
         String[] note = line.split(",");
         Note n=new Note(note[0]);
         if (n.type.equals("note")){
-            n.newNote(Integer.parseInt(note[1]),note[2],LocalDateTime.parse(note[3], DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm")));
+            n.newNote(Integer.parseInt(note[1]),note[3],LocalDateTime.parse(note[2], DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm")));
         }
         else if (n.type.equals("rating")){
             n.newRating(Integer.parseInt(note[1]),Integer.parseInt(note[2]));
