@@ -16,12 +16,11 @@ public class ProductionLine_thread extends Thread {
     public void run() {
         while (running) {
             if (productLine.getStatus().equals(inventory.models.enums.ProductLineStatus.MAINTENANCE)) {
-                // try {
-                // Thread.sleep((int)(1000));
-                // } catch (InterruptedException e) {
-                // Thread.currentThread().interrupt();
-                // }
-                terminate();
+                try {
+                Thread.sleep((int)(1000));
+                } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                }
                 continue;
             }
 

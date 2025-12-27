@@ -2,7 +2,7 @@ package inventory.controllers;
 
 import java.util.ArrayList;
 
-import inventory.gui.ManagerFrame;
+import inventory.gui.manager_frame.*;
 import inventory.gui.supervisor_frame.SupervisorFrame;
 import inventory.models.User;
 import inventory.models.enums.UserRole;

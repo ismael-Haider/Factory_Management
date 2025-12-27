@@ -17,7 +17,7 @@ public class FinishedProductPanel extends JPanel {
     private JComboBox<String> productLineFilter; 
     private JSpinner fromDate, toDate;    
     private JLabel mostRequestedLabel;    
-    private JButton mostRequestedBtn;  
+    private JButton mostRequestedBtn,refreshBtn;  
     
     // === Custom renderer for coloring quantity cells ===
     private class QuantityColorRenderer extends DefaultTableCellRenderer {
@@ -176,6 +176,9 @@ public class FinishedProductPanel extends JPanel {
         mostRequestedBtn = createStandardButton("Most Requested Product");
         mostRequestedBtn.addActionListener(e -> showMostRequestedProduct());
 
+
+        refreshBtn = createStandardButton("Refresh");
+        refreshBtn.addActionListener(e -> refreshData());
         // Add components to top bar
         topBar.add(lineFilterPanel);
         topBar.add(Box.createHorizontalStrut(15)); // Spacer
@@ -184,6 +187,7 @@ public class FinishedProductPanel extends JPanel {
         topBar.add(toDatePanel);
         topBar.add(Box.createHorizontalStrut(25)); // Spacer
         topBar.add(mostRequestedBtn);
+        topBar.add(refreshBtn);
 
         return topBar;
     }
@@ -369,6 +373,31 @@ public class FinishedProductPanel extends JPanel {
         timer.setRepeats(false);
         timer.start();
     }
+
+        // to refresh the table
+    private void refreshData() {
+        // Reset product line filter to "All Lines"
+        productLineFilter.setSelectedIndex(0);
+        
+        // Reset date filters to current date
+        fromDate.setValue(new java.util.Date());
+        toDate.setValue(new java.util.Date());
+        
+        // Clear the most requested product label
+        mostRequestedLabel.setText("Most Requested Product: -");
+        
+        // Reload all data
+        loadAllData();
+        
+        // Visual feedback for the button click
+        refreshBtn.setBackground(new Color(46, 204, 113)); // Green color for refresh
+        Timer timer = new Timer(500, e -> {
+            refreshBtn.setBackground(new Color(52, 73, 94));
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
 
     /* ================= TABLE MODEL ================= */
 

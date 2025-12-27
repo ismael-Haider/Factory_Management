@@ -1,19 +1,21 @@
 package inventory.controllers;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import inventory.models.Note;
 import inventory.models.ProductLine;
-import java.util.List;
-
 import inventory.models.Task;
 import inventory.models.User;
 import inventory.models.enums.ProductLineStatus;
 import inventory.models.enums.TaskStatus;
+import inventory.services.FinishedProductService;
+import inventory.services.ItemService;
 import inventory.services.NoteService;
 import inventory.services.ProductLineService;
+import inventory.services.ProductService;
 import inventory.services.TaskService;
 import inventory.services.UserService;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 
 public class ManagerController {
 
@@ -43,6 +45,14 @@ public class ManagerController {
         return true;
     }
 
+    public void updateSupervisorPassword(int id, String newPassword) {
+        UserService.getUserById(id).ifPresent(user -> {
+            user.setPassword(newPassword);
+            UserService.updateUser(user);
+        });
+        
+    }
+
     public boolean addProductLine(String name, int efficiency) {
         name = name.toUpperCase();
         if (efficiency<=0) {
@@ -55,7 +65,7 @@ public class ManagerController {
         }
         ProductLineService.addProductLine(new ProductLine(name, efficiency));
         // ///////////////////////AGHIAD
-        NoteService.addNewRating(0,ProductLineService.getAllProductLines().getLast().getId() );
+        NoteService.addNewRating(ProductLineService.getAllProductLines().getLast().getId(),0 );
         return true;
     }
 
@@ -82,11 +92,12 @@ public class ManagerController {
         for (Task task : tasks) {
             if (task.getStatus().equals(TaskStatus.FINISHED) || task.getStatus().equals(TaskStatus.CANCELLED)) {
                 if (!task.isDelivered()) {
-                    total += task.getPercentage() * task.getQuantity();
-                    if (hm.containsKey(ProductLineService.getProductLineById(task.getProductLineId()))) {
-                        hm.replace(ProductLineService.getProductLineById(task.getProductLineId()).get(),
-                                hm.get(ProductLineService.getProductLineById(task.getProductLineId()))
-                                        + task.getPercentage() * task.getQuantity());
+                    total += task.getPercentage() * task.getQuantity()/100.0;
+                    ProductLine pl = ProductLineService.getProductLineById(task.getProductLineId()).orElse(null);
+                    if (pl != null && hm.containsKey(pl)) {
+                        hm.replace(pl,
+                                hm.get(pl)
+                                        + (task.getPercentage() * task.getQuantity()/100.0));
 
                     }
 
@@ -116,23 +127,48 @@ public class ManagerController {
         NoteService.addNewNote(text, LocalDateTime.now());
     }
     
-    public void setRating(int rating,int ProductLineId){
+    public boolean setRating(int rating,int ProductLineId){
         Note updaterate=NoteService.getRatingById(ProductLineId).get();
         updaterate.setRating(rating);
         NoteService.updateRating(updaterate);
+        return true;
     }
     
     public HashMap<ProductLine,Note> getAllProductLinesWithRatings(){
         HashMap<ProductLine,Note> map=new HashMap<>(); 
-        List<ProductLine> pls=ProductLineService.getAllProductLines();;
+        List<ProductLine> pls=ProductLineService.getAllProductLines();
+        System.out.println(pls);
+        System.out.println(getAllRatings());
         List<Note> ratings=getAllRatings();
         for (ProductLine pl:pls){
             for (Note r:ratings){
+                System.out.println(pl.getId()+" "+r.getId());
                 if (pl.getId()==r.getId()){
                     map.put(pl, r);
                 }
             }
         }
+        System.out.println(map);
         return map;
     }
+
+
+
+    public void save() {
+        TaskService.saveTasks();
+        FinishedProductService.saveFinishedProducts();
+        ItemService.saveItems();
+        ProductLineService.saveProductLines();
+        ProductService.saveProducts();
+        UserService.saveUsers();
+        NoteService.saveNotes();
+    }
+
+        public void exit() {
+        save();
+        ProductLineService.getAllProductLines()
+                .forEach(pl -> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
+        System.exit(0);
+    }
+
 }

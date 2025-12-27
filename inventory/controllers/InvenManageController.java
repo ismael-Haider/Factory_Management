@@ -55,7 +55,7 @@ public class InvenManageController {
         List<Item> items = ItemService.getAllItems();
         List<Item> newItem = new ArrayList<>();
         for (Item item : items) {
-            if (item.getName().equalsIgnoreCase(name)) {
+            if (item.getName().contains(name)) {
                 newItem.add(item);
             }
         }
@@ -66,7 +66,7 @@ public class InvenManageController {
         List<Item> items = ItemService.getAllItems();
         List<Item> newItem = new ArrayList<>();
         for (Item item : items) {
-            if (item.getCategory().equalsIgnoreCase(category)) {
+            if (item.getCategory().contains(category)) {
                 newItem.add(item);
             }
         }
