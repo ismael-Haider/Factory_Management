@@ -6,6 +6,9 @@ import inventory.controllers.ProLineManageController;
 import inventory.gui.Login;
 import inventory.models.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
@@ -21,6 +24,7 @@ public class SupervisorFrame extends JFrame {
     private InventoryPanel inventoryPanel;
     private JButton manageInventoryBtn;
     private JButton manageProductLineBtn;
+    JButton finishedProductsBtn = new JButton(" Finished Products");
     private JLabel supervisorLabel;
     private JLabel supervisorNameLabel;
     private JScrollPane mainScrollPane;
@@ -35,7 +39,46 @@ public class SupervisorFrame extends JFrame {
         initPanels();
         setActiveButton(manageInventoryBtn, manageProductLineBtn);
         cardLayout.show(mainContentPanel, "INVENTORY");
+        setupCtrlTab();
     }
+    private String[] panelNames = { "INVENTORY", "PRODUCT_LINE", "FINISHED_PRODUCTS" };
+    private int currentIndex = 0;
+
+    private void setupCtrlTab() {
+        InputMap im = mainContentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = mainContentPanel.getActionMap();
+
+        // Ctrl + Tab -> Next panel
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "switchPanel");
+        am.put("switchPanel", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentIndex = (currentIndex + 1) % panelNames.length;
+                cardLayout.show(mainContentPanel, panelNames[currentIndex]);
+                // تحديث ألوان الأزرار
+                updateButtonColors();
+            }
+        });
+    }
+
+    // تحديث ألوان الأزرار حسب اللوحة الحالية
+    private void updateButtonColors() {
+        switch (panelNames[currentIndex]) {
+            case "INVENTORY":
+                setActiveButton(manageInventoryBtn, manageProductLineBtn);
+                setActiveButton(manageInventoryBtn, finishedProductsBtn);
+                break;
+            case "PRODUCT_LINE":
+                setActiveButton(manageProductLineBtn, manageInventoryBtn);
+                setActiveButton(manageProductLineBtn, finishedProductsBtn);
+                break;
+            case "FINISHED_PRODUCTS":
+                setActiveButton(finishedProductsBtn, manageInventoryBtn);
+                setActiveButton(finishedProductsBtn, manageProductLineBtn);
+                break;
+        }
+    }
+
 
     private void initUI() {
         setTitle("Supervisor Dashboard");
@@ -71,13 +114,13 @@ public class SupervisorFrame extends JFrame {
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25)); // Added left and right padding
 
         // Left panel - Supervisor name
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
         leftPanel.setOpaque(false);
 
         supervisorLabel = new JLabel("Supervisor:");
         supervisorLabel.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         supervisorLabel.setForeground(Color.WHITE);
-
+        supervisorLabel.setVerticalAlignment(SwingConstants.CENTER);
         supervisorNameLabel = new JLabel(user.getUserName());
         supervisorNameLabel.setFont(new Font("Calisto MT", Font.PLAIN, 24));
         supervisorNameLabel.setForeground(Color.WHITE);
@@ -88,6 +131,7 @@ public class SupervisorFrame extends JFrame {
         // Center panel - Buttons
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 10));
         centerPanel.setOpaque(false);
+        
 
         manageInventoryBtn = new JButton("Manage Inventory");
         manageInventoryBtn.setFont(new Font("Calisto MT", Font.PLAIN, 24));
@@ -98,6 +142,7 @@ public class SupervisorFrame extends JFrame {
         manageInventoryBtn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, "INVENTORY");
             setActiveButton(manageInventoryBtn, manageProductLineBtn);
+            setActiveButton(manageInventoryBtn, finishedProductsBtn);
         });
 
         manageProductLineBtn = new JButton("Manage Product Line");
@@ -109,13 +154,29 @@ public class SupervisorFrame extends JFrame {
         manageProductLineBtn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, "PRODUCT_LINE");
             setActiveButton(manageProductLineBtn, manageInventoryBtn);
+            setActiveButton(manageProductLineBtn, finishedProductsBtn);
+        });
+
+
+        
+        finishedProductsBtn.setFont(new Font("Calisto MT", Font.PLAIN, 24));
+        finishedProductsBtn.setForeground(Color.WHITE);
+        finishedProductsBtn.setBackground(INACTIVE_COLOR);
+        finishedProductsBtn.setFocusable(false);
+        finishedProductsBtn.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+
+        finishedProductsBtn.addActionListener(e -> {
+            cardLayout.show(mainContentPanel, "FINISHED_PRODUCTS");
+            setActiveButton(finishedProductsBtn, manageInventoryBtn);
+            setActiveButton(finishedProductsBtn, manageProductLineBtn);
         });
 
         centerPanel.add(manageInventoryBtn);
         centerPanel.add(manageProductLineBtn);
+        centerPanel.add(finishedProductsBtn);
 
         // Right panel - Logout button
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 18));
         rightPanel.setOpaque(false);
         
         JButton logoutBtn = new JButton("Logout");
@@ -159,8 +220,10 @@ public class SupervisorFrame extends JFrame {
 
     private void initPanels() {
         ProductLinePanel productLinePanel = new ProductLinePanel(productLineController);
+        FinishedProductPanel finishedProductPanel = new FinishedProductPanel(productLineController);
         mainContentPanel.add(inventoryPanel, "INVENTORY");
         mainContentPanel.add(productLinePanel, "PRODUCT_LINE");
+        mainContentPanel.add(finishedProductPanel, "FINISHED_PRODUCTS");
     }
 
     private void setActiveButton(JButton active, JButton inactive) {

@@ -127,4 +127,7 @@ public class InvenManageController {
         ProductLineService.getAllProductLines().forEach(pl-> pl.setStatus(inventory.models.enums.ProductLineStatus.STOP));
         System.exit(0);
     }
+    public void disrememberUser(User user) {
+        UserService.disrememberUser(user);
+    }
 }

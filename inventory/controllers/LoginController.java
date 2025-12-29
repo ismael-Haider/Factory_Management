@@ -1,5 +1,7 @@
 package inventory.controllers;
 
+import java.util.ArrayList;
+
 import inventory.gui.ManagerFrame;
 import inventory.gui.supervisor_frame.SupervisorFrame;
 import inventory.models.User;
@@ -41,5 +43,31 @@ public class LoginController {
             SupervisorFrame supervisorFrame = new SupervisorFrame(user);
             supervisorFrame.setVisible(true);
         });
+    }
+
+    // check if any user has " remember me " enabled
+    public boolean checkRememberMe() {
+        ArrayList <User> users = (ArrayList<User>)UserService.getAllUsers();
+        for (User user : users) {
+            if (user.isRemember()) {
+                if(user.getRole() == UserRole.MANAGER){
+                    openManagerFrame(user);
+                    return true;}
+                else if (user.getRole() == UserRole.SUPERVISOR){
+                    openSupervisorFrame(user);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+// to method in UserService
+    public void rememberUser(User user) {
+        UserService.rememberUser(user);
+        
+    }
+// to method in UserService
+    public void disrememberUser(User user) {
+        UserService.disrememberUser(user);
     }
 }
