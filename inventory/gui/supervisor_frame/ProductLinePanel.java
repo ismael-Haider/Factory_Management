@@ -3,6 +3,9 @@ package inventory.gui.supervisor_frame;
 import inventory.controllers.ProLineManageController;
 import inventory.models.Task;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -11,6 +14,8 @@ import javax.swing.table.JTableHeader;
 
 public class ProductLinePanel extends JPanel {
 
+    CardLayout cardLayout = new CardLayout();
+    JPanel mainPanel = new JPanel(cardLayout);
     private JTable table;
     private TaskTableModel model;
     private JComboBox<String> filterBoxbyTaskStatus;
@@ -44,6 +49,29 @@ public class ProductLinePanel extends JPanel {
 
         enableClearSelectionOnOutsideClick();
         startAutoRefresh();
+        setupShortcuts();
+    }
+
+    private void setupShortcuts() {
+        InputMap im = this.getInputMap(this.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = this.getActionMap();
+        // Ctrl + A → Add
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "addTask");
+        am.put("addTask", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addTaskBtn.doClick();
+            }
+        });
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), "cancel");
+        am.put("cancel", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancelBtn.doClick();
+            }
+        });
+
     }
 
     private JPanel initTop() {
@@ -83,9 +111,29 @@ public class ProductLinePanel extends JPanel {
         lineFilterPanel.add(lineLabel, BorderLayout.NORTH);
         lineFilterPanel.add(searchOnTasksbyProductLineID, BorderLayout.CENTER);
 
+        JPanel productFilterPanel = new JPanel(new BorderLayout(0, 5));
+        productFilterPanel.setOpaque(false);
+
+        JLabel productLabel = new JLabel("Filter by Product:");
+        productLabel.setFont(productLabel.getFont().deriveFont(Font.BOLD, 13f));
+
+        searchOntasksbyProductName = new JComboBox<>();
+        searchOntasksbyProductName.setPreferredSize(new Dimension(200, 35));
+        searchOntasksbyProductName.addItem("ALL");
+
+        controller.viewAllProducts()
+                .forEach(p -> searchOntasksbyProductName.addItem(
+                        p.getId() + " - " + p.getName()));
+
+        searchOntasksbyProductName.addActionListener(e -> refreshTable());
+
+        productFilterPanel.add(productLabel, BorderLayout.NORTH);
+        productFilterPanel.add(searchOntasksbyProductName, BorderLayout.CENTER);
+
         // أضفهم للـ top
         top.add(filterPanel);
         top.add(lineFilterPanel);
+        top.add(productFilterPanel);
         return top;
     }
 
@@ -137,8 +185,8 @@ public class ProductLinePanel extends JPanel {
                 String status = value.toString();
                 switch (status) {
                     case "IN_QUEUE":
-                        label.setBackground(Color.YELLOW); // Light blue
-                        label.setForeground(new Color(41, 128, 185));
+                        label.setBackground(Color.gray); // Light blue
+                        label.setForeground(Color.WHITE);
                         break;
                     case "FINISHED":
                         label.setBackground(new Color(200, 255, 200)); // Light green
@@ -148,10 +196,9 @@ public class ProductLinePanel extends JPanel {
                         label.setBackground(new Color(255, 200, 200)); // Light red
                         label.setForeground(new Color(192, 57, 43));
                         break;
-
                     case "IN_PROGRESS":
-                        label.setBackground(new Color(52, 152, 219));// Light blue
-                        label.setForeground(Color.WHITE);
+                        label.setBackground(new Color(200, 220, 255)); // Light red
+                        label.setForeground(new Color(41, 128, 185));
                         break;
                     default:
                         label.setBackground(Color.WHITE);
@@ -265,6 +312,7 @@ public class ProductLinePanel extends JPanel {
         model.setRowCount(0);
 
         List<Task> tasks = controller.viewAllTasks();
+        // filter by task's status
         String statusFilter = filterBoxbyTaskStatus.getSelectedItem().toString();
         if (!"ALL".equals(statusFilter)) {
             tasks = tasks.stream()
@@ -272,12 +320,21 @@ public class ProductLinePanel extends JPanel {
                     .toList();
         }
 
-        // فلترة بالخط
+        // filter by product line ID
         String lineFilter = (String) searchOnTasksbyProductLineID.getSelectedItem();
         if (!"ALL".equals(lineFilter)) {
             int lineId = Integer.parseInt(lineFilter.split(" - ")[0]);
             tasks = tasks.stream()
                     .filter(t -> t.getProductLineId() == lineId)
+                    .toList();
+        }
+
+        // filter by product ID
+        String productFilter = (String) searchOntasksbyProductName.getSelectedItem();
+        if (!"ALL".equals(productFilter)) {
+            int productId = Integer.parseInt(productFilter.split(" - ")[0]);
+            tasks = tasks.stream()
+                    .filter(t -> t.getProductId() == productId)
                     .toList();
         }
 
@@ -398,40 +455,41 @@ class TaskTableModel extends DefaultTableModel {
 }
 
 // TaskCellRenderer class (assuming it exists)
-class TaskCellRenderer extends DefaultTableCellRenderer {
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+// class TaskCellRenderer extends DefaultTableCellRenderer {
+// @Override
+// public Component getTableCellRendererComponent(JTable table, Object value,
+// boolean isSelected, boolean hasFocus, int row, int column) {
+// Component c = super.getTableCellRendererComponent(table, value, isSelected,
+// hasFocus, row, column);
 
-        // Center align text
-        setHorizontalAlignment(JLabel.CENTER);
+// // Center align text
+// setHorizontalAlignment(JLabel.CENTER);
 
-        // Status column styling
-        if (column == 7 && value != null) {
-            String status = value.toString();
-            c.setFont(c.getFont().deriveFont(Font.BOLD));
+// // Status column styling
+// if (column == 7 && value != null) {
+// String status = value.toString();
+// c.setFont(c.getFont().deriveFont(Font.BOLD));
 
-            if (!isSelected) {
-                switch (status) {
-                    case "IN_QUEUE":
-                        c.setBackground(new Color(200, 220, 255));
-                        c.setForeground(new Color(41, 128, 185));
-                        break;
-                    case "FINISHED":
-                        c.setBackground(new Color(200, 255, 200));
-                        c.setForeground(new Color(39, 174, 96));
-                        break;
-                    case "CANCELLED":
-                        c.setBackground(new Color(255, 200, 200));
-                        c.setForeground(new Color(192, 57, 43));
-                        break;
-                    default:
-                        c.setBackground(Color.WHITE);
-                        c.setForeground(Color.BLACK);
-                }
-            }
-        }
-        return c;
-    }
-}
+// if (!isSelected) {
+// switch (status) {
+// case "IN_QUEUE":
+// c.setBackground(new Color(200, 220, 255));
+// c.setForeground(new Color(41, 128, 185));
+// break;
+// case "FINISHED":
+// c.setBackground(new Color(200, 255, 200));
+// c.setForeground(new Color(39, 174, 96));
+// break;
+// case "CANCELLED":
+// c.setBackground(new Color(255, 200, 200));
+// c.setForeground(new Color(192, 57, 43));
+// break;
+// default:
+// c.setBackground(Color.WHITE);
+// c.setForeground(Color.BLACK);
+// }
+// }
+// }
+// return c;
+// }
+// }

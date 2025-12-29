@@ -72,11 +72,13 @@ public class TaskService {
         for (Integer i : items.keySet()) {
             Optional<Item> itemOpt = ItemService.getItemById(i);
             if (itemOpt.isEmpty()) {
+                ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
                 throw new IllegalArgumentException("Item with ID " + i + " does not exist.");
             } 
             Item item = itemOpt.get();
             double required = items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0;
             if (item.getQuantity() < required) {
+                ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
                 throw new IllegalArgumentException("Insufficient quantity for item " + item.getName() + ". Required: " + required + ", Available: " + item.getQuantity());
             }
         }

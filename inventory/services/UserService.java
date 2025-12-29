@@ -27,6 +27,11 @@ public class UserService {
         return users.stream().filter(user -> user.getId() == id).findFirst();
     }
 
+    public static synchronized Optional<User> getUserByUsername(String userName) {
+        return users.stream().filter(user -> user.getUserName().equals(userName)).findFirst();
+    }
+
+
     public static synchronized List<User> getAllUsers() {
         return new ArrayList<>(users);
     }
@@ -38,7 +43,19 @@ public class UserService {
     public static synchronized void deleteUser(int id) {
         users.removeIf(user -> user.getId() == id);
     }
-
+// Remember Me functionality
+    public static synchronized void rememberUser(User user) {
+        user.setRemember(true);
+        updateUser(user);
+        saveUsers();
+    }
+// Disremember Me functionality
+    public static synchronized void disrememberUser(User user) {
+        user.setRemember(false);
+        updateUser(user);
+        saveUsers();
+    }
+//...
     // Authenticate user (for login simulation)
     public static synchronized Optional<User> authenticate(String userName, String password) {
         return users.stream().filter(user -> user.getUserName().equals(userName) && user.getPassword().equals(password)).findFirst();

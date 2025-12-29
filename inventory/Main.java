@@ -24,6 +24,10 @@ public class Main {
         ProductLineService.init();
         UserService.init();
         LoginController loginController = new LoginController();
+        
+        if(loginController.checkRememberMe()){
+            return;
+        }
         Login login = new Login(loginController);
         login.setVisible(true);
         // Start threads

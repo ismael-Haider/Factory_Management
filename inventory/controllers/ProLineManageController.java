@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProLineManageController {
 
@@ -197,29 +198,27 @@ public class ProLineManageController {
 
     public Product viewTheMostRequestedProduct(LocalDate fld, LocalDate lld) {
         List<Task> allTask = TaskService.getAllTasks();
-        List<Integer> ids = new ArrayList<>();
+        List<Task> filtered = new ArrayList<>();
         for (Task t : allTask) {
-            if (t.getStartDate().isBefore(fld) || t.getDeliveredDate().isAfter(lld)) {
-                allTask.remove(t);
-            } else {
-                ids.add(t.getProductId());
+            boolean startsOnOrAfterFrom = !t.getStartDate().isBefore(fld);
+            boolean deliveredOnOrBeforeTo = !t.getDeliveredDate().isAfter(lld);
+            if (startsOnOrAfterFrom && deliveredOnOrBeforeTo) {
+                filtered.add(t);
             }
         }
-        int maxCount = 0;
-        int mostRequestedId = -1;
-        for (int id : ids) {
-            int count = 0;
-            for (Task t : allTask) {
-                if (t.getProductId() == id) {
-                    count++;
-                }
-            }
-            if (count > maxCount) {
-                maxCount = count;
-                mostRequestedId = id;
-            }
+        if (filtered.isEmpty()) {
+            return null;
         }
-        return ProductService.getProductById(mostRequestedId).get();
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (Task t : filtered) {
+            counts.merge(t.getProductId(), 1, Integer::sum);
+        }
+        int mostRequestedId = counts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(-1);
+        if (mostRequestedId == -1) return null;
+        return ProductService.getProductById(mostRequestedId).orElse(null);
     }
 
     public HashMap<ProductLine,List<FinishedProduct>> viewFinishedProductsByAllProductLine(){

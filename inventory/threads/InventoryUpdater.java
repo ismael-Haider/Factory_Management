@@ -35,15 +35,16 @@ public class InventoryUpdater extends Thread {
                     }
                     logger.info("Reduced inventory for product ID " + task.getProductId() + " by " + task.getQuantity());
                 });
-                FinishedProductService.saveFinishedProducts();
-                
-                // Sleep for a day (simulate daily check)
-                Thread.sleep(86400000); // 24 hours in milliseconds (adjust for testing)
                 ItemService.saveItems();
                 TaskService.saveTasks();
                 ProductLineService.saveProductLines();
                 ProductService.saveProducts();
                 UserService.saveUsers();
+                FinishedProductService.saveFinishedProducts();
+                
+                // Sleep for a day (simulate daily check)
+                Thread.sleep(86400000); // 24 hours in milliseconds (adjust for testing)
+                
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;

@@ -12,29 +12,28 @@ import javax.swing.table.JTableHeader;
 
 public class InventoryPanel extends JPanel {
     // === UI Components ===
-    private JTable table;                  // Table to display items
+    private JTable table; // Table to display items
     private JButton addBtn, deleteBtn, Refresh, save, Update; // Action buttons
-    private JTextField searchField;        // Search by name
-    private JTextField searchField2;       // Search by category
-    private JComboBox<String> filterBox;   // Filter dropdown
-    private DefaultTableModel tableModel;  // Table model (non-editable)
-    
+    private JTextField searchField; // Search by name
+    private JTextField searchField2; // Search by category
+    private JComboBox<String> filterBox; // Filter dropdown
+    private DefaultTableModel tableModel; // Table model (non-editable)
+
     // === Custom renderer for coloring quantity cells ===
     private class QuantityColorRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            
+
             Component c = super.getTableCellRendererComponent(
-                table, value, isSelected, hasFocus, row, column
-            );
-            
+                    table, value, isSelected, hasFocus, row, column);
+
             // Only color the "Quantity" column (index 4)
             if (column == 4) {
                 try {
                     int quantity = (int) table.getValueAt(row, column);
                     int minQuantity = (int) table.getValueAt(row, 5); // Min Qty column index
-                    
+
                     // Set colors based on comparison
                     if (quantity < minQuantity) {
                         c.setBackground(new Color(255, 200, 200)); // Light red
@@ -46,12 +45,12 @@ public class InventoryPanel extends JPanel {
                         c.setBackground(new Color(200, 220, 255)); // Light blue
                         c.setForeground(Color.BLUE.darker());
                     }
-                    
+
                     // Make text bold for better visibility
                     if (c instanceof JComponent) {
                         ((JComponent) c).setFont(c.getFont().deriveFont(Font.BOLD));
                     }
-                    
+
                     // Ensure selection color still visible
                     if (isSelected) {
                         c.setBackground(c.getBackground().darker());
@@ -68,10 +67,10 @@ public class InventoryPanel extends JPanel {
                 }
                 c.setForeground(Color.BLACK);
             }
-            
+
             // Center align all text
             setHorizontalAlignment(JLabel.CENTER);
-            
+
             return c;
         }
     }
@@ -86,7 +85,7 @@ public class InventoryPanel extends JPanel {
         this.controller = controller;
         setLayout(new BorderLayout(10, 10)); // Add some spacing
         setBackground(new Color(245, 245, 245));
-        
+
         // Create a main container with padding on left and right
         JPanel mainContainer = new JPanel(new BorderLayout(10, 10));
         mainContainer.setBackground(new Color(245, 245, 245));
@@ -96,6 +95,8 @@ public class InventoryPanel extends JPanel {
         JPanel topBar = initTopBar();
         JScrollPane tableScrollPane = initTable();
         JPanel bottomBar = initBottomBar();
+
+        setupShortcuts();
 
         // Add components to main container
         mainContainer.add(topBar, BorderLayout.NORTH);
@@ -107,6 +108,55 @@ public class InventoryPanel extends JPanel {
 
         // Load all items at startup
         loadAllItems();
+    }
+
+    private void setupShortcuts() {
+        InputMap im = this.getInputMap(this.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = this.getActionMap();
+        // Ctrl + A → Add
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "addItem");
+        am.put("addItem", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addBtn.doClick();
+            }
+        });
+
+        // Ctrl + D → Delete
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK), "deleteItem");
+        am.put("deleteItem", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteBtn.doClick();
+            }
+        });
+
+        // Ctrl + R → Refresh
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK), "refreshItems");
+        am.put("refreshItems", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Refresh.doClick();
+            }
+        });
+
+        // Ctrl + U → Update
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK), "updateItem");
+        am.put("updateItem", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Update.doClick();
+            }
+        });
+
+        // Ctrl + S → Save
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK), "saveItems");
+        am.put("saveItems", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                save.doClick();
+            }
+        });
     }
 
     /**
@@ -122,7 +172,7 @@ public class InventoryPanel extends JPanel {
         JLabel nameLabel = new JLabel("Search by Name:");
         nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, 13f));
         nameLabel.setForeground(new Color(60, 60, 60));
-        
+
         searchField = new JTextField(25); // Larger field
         searchField.setPreferredSize(new Dimension(250, 35));
         searchField.setText("Enter Name");
@@ -137,6 +187,7 @@ public class InventoryPanel extends JPanel {
                     searchField.setForeground(Color.BLACK);
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (searchField.getText().isEmpty()) {
@@ -149,14 +200,15 @@ public class InventoryPanel extends JPanel {
         // Action: search by name when Enter is pressed
         searchField.addActionListener(e -> {
             String query = searchField.getText();
-            if (query.isEmpty() || query.equals("Enter Name")) return;
+            if (query.isEmpty() || query.equals("Enter Name"))
+                return;
 
             List<Item> searchItem = controller.searchByName(query);
             tableModel.setRowCount(0); // Clear table
             for (Item item : searchItem) {
                 tableModel.addRow(new Object[] {
-                    item.getId(), item.getName(), item.getCategory(),
-                    item.getPrice(), item.getQuantity(), item.getMinQuantity()
+                        item.getId(), item.getName(), item.getCategory(),
+                        item.getPrice(), item.getQuantity(), item.getMinQuantity()
                 });
             }
         });
@@ -169,7 +221,7 @@ public class InventoryPanel extends JPanel {
         JLabel categoryLabel = new JLabel("Search by Category:");
         categoryLabel.setFont(categoryLabel.getFont().deriveFont(Font.BOLD, 13f));
         categoryLabel.setForeground(new Color(60, 60, 60));
-        
+
         searchField2 = new JTextField(25); // Larger field
         searchField2.setPreferredSize(new Dimension(250, 35));
         searchField2.setText("Enter Category");
@@ -184,6 +236,7 @@ public class InventoryPanel extends JPanel {
                     searchField2.setForeground(Color.BLACK);
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (searchField2.getText().isEmpty()) {
@@ -196,14 +249,15 @@ public class InventoryPanel extends JPanel {
         // Action: search by category when Enter is pressed
         searchField2.addActionListener(e -> {
             String query = searchField2.getText();
-            if (query.isEmpty() || query.equals("Enter Category")) return;
+            if (query.isEmpty() || query.equals("Enter Category"))
+                return;
 
             List<Item> searchItem2 = controller.searchByCategory(query);
             tableModel.setRowCount(0); // Clear table
             for (Item item : searchItem2) {
                 tableModel.addRow(new Object[] {
-                    item.getId(), item.getName(), item.getCategory(),
-                    item.getPrice(), item.getQuantity(), item.getMinQuantity()
+                        item.getId(), item.getName(), item.getCategory(),
+                        item.getPrice(), item.getQuantity(), item.getMinQuantity()
                 });
             }
         });
@@ -216,9 +270,9 @@ public class InventoryPanel extends JPanel {
         JLabel filterLabel = new JLabel("Filter by Status:");
         filterLabel.setFont(filterLabel.getFont().deriveFont(Font.BOLD, 13f));
         filterLabel.setForeground(new Color(60, 60, 60));
-        
+
         filterBox = new JComboBox<>(new String[] {
-            "All Items", "Available", "Low Stock", "Run Out"
+                "All Items", "Available", "Low Stock", "Run Out"
         });
         filterBox.setPreferredSize(new Dimension(180, 35));
         filterBox.addActionListener(e -> filterItems());
@@ -241,13 +295,12 @@ public class InventoryPanel extends JPanel {
      */
     private JScrollPane initTable() {
         tableModel = new DefaultTableModel(
-            new String[] { "ID", "Name", "Category", "Price", "Quantity", "Min Quantity" }, 0
-        ) {
+                new String[] { "ID", "Name", "Category", "Price", "Quantity", "Min Quantity" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Prevent editing cells directly
             }
-            
+
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 if (columnIndex == 0 || columnIndex == 4 || columnIndex == 5) {
@@ -260,32 +313,32 @@ public class InventoryPanel extends JPanel {
         };
 
         table = new JTable(tableModel);
-        
+
         // Apply custom renderer for coloring quantity cells
         QuantityColorRenderer colorRenderer = new QuantityColorRenderer();
         table.getColumnModel().getColumn(4).setCellRenderer(colorRenderer); // Quantity column
-        
+
         // Make table larger and more visible
         table.setRowHeight(35); // Increased row height
         table.setFont(table.getFont().deriveFont(14f)); // Larger font
         table.setIntercellSpacing(new Dimension(10, 6)); // More spacing between cells
-        
+
         // Style the table header
         JTableHeader header = table.getTableHeader();
         header.setFont(header.getFont().deriveFont(Font.BOLD, 14f));
         header.setBackground(new Color(52, 73, 94));
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40));
-        
+
         // Table styling
         table.setGridColor(new Color(220, 220, 220));
         table.setShowGrid(true);
         table.setSelectionBackground(new Color(52, 152, 219));
         table.setSelectionForeground(Color.WHITE);
-        
+
         // Prevent column drag
         table.getTableHeader().setReorderingAllowed(false);
-        
+
         // Center align all columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -294,15 +347,14 @@ public class InventoryPanel extends JPanel {
                 table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
         }
-        
+
         // Create scroll pane with table
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setPreferredSize(new Dimension(1100, 450)); // Make the table larger
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(10, 0, 10, 0),
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1)
-        ));
-        
+                BorderFactory.createEmptyBorder(10, 0, 10, 0),
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1)));
+
         return scrollPane;
     }
 
@@ -337,7 +389,7 @@ public class InventoryPanel extends JPanel {
 
         return bottomBar;
     }
-    
+
     /**
      * Helper method to create standard buttons
      */
@@ -349,30 +401,30 @@ public class InventoryPanel extends JPanel {
         button.setFont(button.getFont().deriveFont(Font.BOLD, 14f));
         button.setPreferredSize(new Dimension(100, 40));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        
+
         // Hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(new Color(44, 62, 80));
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(new Color(52, 73, 94));
             }
-            
+
             @Override
             public void mousePressed(MouseEvent e) {
                 button.setBackground(new Color(41, 57, 74));
             }
-            
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 button.setBackground(new Color(52, 73, 94));
             }
         });
-        
+
         return button;
     }
 
@@ -384,8 +436,8 @@ public class InventoryPanel extends JPanel {
         List<Item> items = controller.view_items();
         for (Item item : items) {
             tableModel.addRow(new Object[] {
-                item.getId(), item.getName(), item.getCategory(),
-                item.getPrice(), item.getQuantity(), item.getMinQuantity()
+                    item.getId(), item.getName(), item.getCategory(),
+                    item.getPrice(), item.getQuantity(), item.getMinQuantity()
             });
         }
     }
@@ -405,8 +457,8 @@ public class InventoryPanel extends JPanel {
         tableModel.setRowCount(0); // Clear table
         for (Item item : filteredItems) {
             tableModel.addRow(new Object[] {
-                item.getId(), item.getName(), item.getCategory(),
-                item.getPrice(), item.getQuantity(), item.getMinQuantity()
+                    item.getId(), item.getName(), item.getCategory(),
+                    item.getPrice(), item.getQuantity(), item.getMinQuantity()
             });
         }
     }
@@ -416,14 +468,15 @@ public class InventoryPanel extends JPanel {
      */
     private void addItem(ActionEvent e) {
         AddItemFrame frame;
-        if(e.getSource()==addBtn){
-            frame= new AddItemFrame(controller, this::loadAllItems,null);
-        }else{
+        if (e.getSource() == addBtn) {
+            frame = new AddItemFrame(controller, this::loadAllItems, null);
+        } else {
             int selectedRow = table.getSelectedRow();
-            if (selectedRow == -1) return;
+            if (selectedRow == -1)
+                return;
             int id = (int) table.getValueAt(selectedRow, 0);
             Item item = controller.SearchById(id);
-            frame=new AddItemFrame(controller,this::loadAllItems,item);
+            frame = new AddItemFrame(controller, this::loadAllItems, item);
         }
         frame.setVisible(true);
     }
@@ -433,7 +486,8 @@ public class InventoryPanel extends JPanel {
      */
     private void deleteSelectedItem() {
         int selectedRow = table.getSelectedRow();
-        if (selectedRow == -1) return; // No selection
+        if (selectedRow == -1)
+            return; // No selection
 
         int id = (int) table.getValueAt(selectedRow, 0);
         controller.delete_item(id);

@@ -9,7 +9,7 @@ public class User {
     private String userName;
     private String password;
     private UserRole role; // Default: SUPERVISOR
-
+    private boolean remember;
     public User(String userName, String password) {
         counter+=1;
         this.id = counter;
@@ -24,15 +24,17 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.role = role;
+         this.remember=false;
     }
 
     // For loading from CSV
-    public User(int id, String userName, String password, UserRole role) {
+    public User(int id, String userName, String password, UserRole role, boolean remember) {
         counter+=1;
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.role = role;
+        this.remember = remember;
     }
 
     // Getters and Setters
@@ -43,15 +45,16 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public UserRole getRole() { return role; }
     public void setRole(UserRole role) { this.role = role; }
-
+    public boolean isRemember() { return remember; }
+    public void setRemember(boolean remember) { this.remember = remember; }
     // CSV Serialization
     public String toCSV() {
-        return id + "," + userName + "," + password + "," + role;
+        return id + "," + userName + "," + password + "," + role + "," + remember;
     }
 
     public static User fromCSV(String csvLine) {
         String[] parts = csvLine.split(",");
-        return new User(Integer.parseInt(parts[0]), parts[1], parts[2], UserRole.valueOf(parts[3]));
+        return new User(Integer.parseInt(parts[0]), parts[1], parts[2], UserRole.valueOf(parts[3]),Boolean.parseBoolean(parts[4]));
     }
 
     @Override
