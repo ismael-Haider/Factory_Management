@@ -1,7 +1,6 @@
 package FactoryManagement.config;
 
 public class Constants {
-
     public static final String ITEMS_CSV = "inventory/data" + "/items.csv";
     public static final String PRODUCTS_CSV = "inventory/data" + "/products.csv";
     public static final String FINISHED_PRODUCTS_CSV = "inventory/data" + "/finished_products.csv";

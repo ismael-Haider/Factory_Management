@@ -52,13 +52,13 @@ public class ManagerController {
             user.setPassword(newPassword);
             UserService.updateUser(user);
         });
-        
+
     }
 
     public boolean addProductLine(String name, int efficiency) {
         name = name.toUpperCase();
-        if (efficiency<=0) {
-            recordError("efficiency (" + efficiency + ") is smaller than zero" );
+        if (efficiency <= 0) {
+            recordError("efficiency (" + efficiency + ") is smaller than zero");
             return false;
         }
         for (ProductLine pl : ProductLineService.getAllProductLines()) {
@@ -68,8 +68,7 @@ public class ManagerController {
             }
         }
         ProductLineService.addProductLine(new ProductLine(name, efficiency));
-        // ///////////////////////AGHIAD
-        NoteService.addNewRating(ProductLineService.getAllProductLines().getLast().getId(),0 );
+        NoteService.addNewRating(ProductLineService.getAllProductLines().getLast().getId(), 0);
         return true;
     }
 
@@ -81,12 +80,10 @@ public class ManagerController {
         ProductLineService.getProductLineById(id).get().setStatus(ProductLineStatus.MAINTENANCE);
     }
 
-
-    //
     public void setTheProductLineStop(int id) {
         ProductLineService.getProductLineById(id).get().setStatus(ProductLineStatus.STOP);
     }
-//
+
     public HashMap<ProductLine, Double> viewPerformanceReport() {
         List<Task> tasks = TaskService.getAllTasks();
         HashMap<ProductLine, Double> hm = new HashMap<>();
@@ -98,12 +95,12 @@ public class ManagerController {
         for (Task task : tasks) {
             if (task.getStatus().equals(TaskStatus.FINISHED) || task.getStatus().equals(TaskStatus.CANCELLED)) {
                 if (!task.isDelivered()) {
-                    total += task.getPercentage() * task.getQuantity()/100.0;
+                    total += task.getPercentage() * task.getQuantity() / 100.0;
                     ProductLine pl = ProductLineService.getProductLineById(task.getProductLineId()).orElse(null);
                     if (pl != null && hm.containsKey(pl)) {
                         hm.replace(pl,
                                 hm.get(pl)
-                                        + (task.getPercentage() * task.getQuantity()/100.0));
+                                        + (task.getPercentage() * task.getQuantity() / 100.0));
 
                     }
 
@@ -116,49 +113,43 @@ public class ManagerController {
             if (total != 0.0) {
                 perf = (hm.get(pl) / total) * 100.0;
             }
-            hm.replace(pl, (double)(Math.round(perf*100))/100);
+            hm.replace(pl, (double) (Math.round(perf * 100)) / 100);
         }
         return hm;
     }
 
-    //////////////////////////////////AGHIAD
     public List<Note> getAllNotes() {
         return NoteService.getAllNotes();
     }
-    public List<Note> getAllRatings(){
+
+    public List<Note> getAllRatings() {
         return NoteService.getAllRatings();
     }
 
-    public void addNote(String text){
+    public void addNote(String text) {
         NoteService.addNewNote(text, LocalDateTime.now());
     }
-    
-    public boolean setRating(int rating,int ProductLineId){
-        Note updaterate=NoteService.getRatingById(ProductLineId).get();
+
+    public boolean setRating(int rating, int ProductLineId) {
+        Note updaterate = NoteService.getRatingById(ProductLineId).get();
         updaterate.setRating(rating);
         NoteService.updateRating(updaterate);
         return true;
     }
-    
-    public HashMap<ProductLine,Note> getAllProductLinesWithRatings(){
-        HashMap<ProductLine,Note> map=new HashMap<>(); 
-        List<ProductLine> pls=ProductLineService.getAllProductLines();
-        System.out.println(pls);
-        System.out.println(getAllRatings());
-        List<Note> ratings=getAllRatings();
-        for (ProductLine pl:pls){
-            for (Note r:ratings){
-                System.out.println(pl.getId()+" "+r.getId());
-                if (pl.getId()==r.getId()){
+
+    public HashMap<ProductLine, Note> getAllProductLinesWithRatings() {
+        HashMap<ProductLine, Note> map = new HashMap<>();
+        List<ProductLine> pls = ProductLineService.getAllProductLines();
+        List<Note> ratings = getAllRatings();
+        for (ProductLine pl : pls) {
+            for (Note r : ratings) {
+                if (pl.getId() == r.getId()) {
                     map.put(pl, r);
                 }
             }
         }
-        System.out.println(map);
         return map;
     }
-
-
 
     public void save() {
         TaskService.saveTasks();
@@ -170,13 +161,14 @@ public class ManagerController {
         NoteService.saveNotes();
     }
 
-        public void exit() {
+    public void exit() {
         save();
         ProductLineService.getAllProductLines()
                 .forEach(pl -> pl.setStatus(FactoryManagement.models.enums.ProductLineStatus.STOP));
         System.exit(0);
     }
+
     public void recordError(String errorMessage) {
-       Exceptions.saveError(errorMessage);
+        Exceptions.saveError(errorMessage);
     }
 }

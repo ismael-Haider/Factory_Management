@@ -32,14 +32,12 @@ public class NoteService {
 
     public static synchronized void LoadAllNotes() {
         List<Note> allNotes = CsvReader.readNotes(Constants.NOTES_CSV);
-        for (Note n:allNotes){
-            if (n.getType().equals("note")){
+        for (Note n : allNotes) {
+            if (n.getType().equals("note")) {
                 notes.add(n);
-            }
-            else if (n.getType().equals("rating")){
+            } else if (n.getType().equals("rating")) {
                 ratings.add(n);
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("Invalid note type: " + n.getType());
             }
         }
@@ -75,10 +73,10 @@ public class NoteService {
 
     public static void saveNotes() {
         List<Note> allNotes = new ArrayList<>();
-        for (Note n : notes){
+        for (Note n : notes) {
             allNotes.add(n);
         }
-        for (Note r:ratings){
+        for (Note r : ratings) {
             allNotes.add(r);
         }
         CsvWriter.writeToCsv(Constants.NOTES_CSV, allNotes);

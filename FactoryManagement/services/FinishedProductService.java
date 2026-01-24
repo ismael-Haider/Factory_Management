@@ -1,6 +1,5 @@
 package FactoryManagement.services;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +9,9 @@ import FactoryManagement.csv.CsvReader;
 import FactoryManagement.csv.CsvWriter;
 import FactoryManagement.models.FinishedProduct;
 
-
 public class FinishedProductService {
     private static List<FinishedProduct> finishedProducts = new ArrayList<>();
 
-    // Call once at startup
     public static void init() {
         loadFinishedProducts();
     }

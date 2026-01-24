@@ -19,7 +19,7 @@ public class Login extends JFrame {
     public Login(LoginController loginController) {
         this.loginController = loginController;
 
-        setTitle("Inventory Management System - Login");
+        setTitle("Factory Management System - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
@@ -27,26 +27,25 @@ public class Login extends JFrame {
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setBorder(new EmptyBorder(40, 40, 40, 40));
 
-        // ===== Title =====
+        // Title
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setOpaque(false);
 
-        titleLabel = new JLabel("Inventory Management System");
+        titleLabel = new JLabel("Factory Management System");
         titleLabel.setFont(new Font("Calisto MT", Font.BOLD, 36));
         titleLabel.setForeground(new Color(44, 62, 80));
         titlePanel.add(titleLabel);
 
-        // ===== Form Panel =====
+        // Form Panel
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                new EmptyBorder(40, 40, 40, 40)
-        ));
+                new EmptyBorder(40, 40, 40, 40)));
         formPanel.setMaximumSize(new Dimension(500, 420));
 
-        // ===== Username =====
+        // Username
         userLabel = new JLabel("Username:");
         userLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
@@ -58,7 +57,7 @@ public class Login extends JFrame {
         userPanel.add(userLabel, BorderLayout.NORTH);
         userPanel.add(usernameField, BorderLayout.CENTER);
 
-        // ===== Password =====
+        // Password
         passLabel = new JLabel("Password:");
         passLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
@@ -70,14 +69,14 @@ public class Login extends JFrame {
         passPanel.add(passLabel, BorderLayout.NORTH);
         passPanel.add(passwordField, BorderLayout.CENTER);
 
-        // ===== Stylish Remember Me =====
+        // Stylish Remember Me
         rememberBox = createStyledCheckBox("Remember me");
 
         JPanel rememberPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         rememberPanel.setOpaque(false);
         rememberPanel.add(rememberBox);
 
-        // ===== Login Button =====
+        // Login Button
         loginBtn = createStyledButton("Login");
 
         JPanel buttonPanel = new JPanel();
@@ -87,7 +86,7 @@ public class Login extends JFrame {
 
         loginBtn.addActionListener(e -> handleLogin());
 
-        // ===== Assemble =====
+        // Assemble
         formPanel.add(userPanel);
         formPanel.add(Box.createVerticalStrut(20));
         formPanel.add(passPanel);
@@ -109,18 +108,17 @@ public class Login extends JFrame {
 
         setupPlaceholders();
         setupKeyboardNavigation();
-        setupShortcuts();  
+        setupShortcuts();
     }
 
-    // ==================== Styles ====================
+    // Styles
 
     private void styleTextField(JTextField field) {
         field.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         field.setPreferredSize(new Dimension(300, 40));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                new EmptyBorder(10, 10, 10, 10)
-        ));
+                new EmptyBorder(10, 10, 10, 10)));
     }
 
     private JCheckBox createStyledCheckBox(String text) {
@@ -131,7 +129,6 @@ public class Login extends JFrame {
         box.setFocusPainted(false);
         box.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Custom icons
         box.setIcon(new CheckBoxIcon(false));
         box.setSelectedIcon(new CheckBoxIcon(true));
 
@@ -170,7 +167,7 @@ public class Login extends JFrame {
         return button;
     }
 
-    // ==================== Logic ====================
+    // Logic
 
     private void handleLogin() {
         String username = usernameField.getText();
@@ -192,7 +189,7 @@ public class Login extends JFrame {
         }
     }
 
-    // ==================== Placeholder ====================
+    // Placeholder
 
     private void setupPlaceholders() {
         usernameField.setText("Enter Username");
@@ -236,21 +233,22 @@ public class Login extends JFrame {
             }
         });
     }
+
     private void setupShortcuts() {
-    KeyStroke ctrlR = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK);
+        KeyStroke ctrlR = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK);
 
-    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-            .put(ctrlR, "toggleRemember");
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(ctrlR, "toggleRemember");
 
-    getRootPane().getActionMap()
-            .put("toggleRemember", new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    rememberBox.setSelected(!rememberBox.isSelected());
-                }
-            });
-}
-    
+        getRootPane().getActionMap()
+                .put("toggleRemember", new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        rememberBox.setSelected(!rememberBox.isSelected());
+                    }
+                });
+    }
+
     private void setupKeyboardNavigation() {
         usernameField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -273,8 +271,6 @@ public class Login extends JFrame {
         });
     }
 
-    // ==================== Custom Icon ====================
-
     static class CheckBoxIcon implements Icon {
         private final boolean checked;
 
@@ -282,8 +278,13 @@ public class Login extends JFrame {
             this.checked = checked;
         }
 
-        public int getIconWidth() { return 18; }
-        public int getIconHeight() { return 18; }
+        public int getIconWidth() {
+            return 18;
+        }
+
+        public int getIconHeight() {
+            return 18;
+        }
 
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2 = (Graphics2D) g;

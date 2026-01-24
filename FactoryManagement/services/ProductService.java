@@ -18,11 +18,9 @@ public class ProductService {
     }
 
     public static synchronized void addProduct(Product product) {
-        // Validate item IDs using static ItemService
         Map<Integer, Integer> itemQuantities = product.getItemQuantities();
         for (Integer itemId : itemQuantities.keySet()) {
             if (ItemService.getItemById(itemId).isEmpty()) {
-                System.out.println("Invalid item ID: " + itemId);
                 return;
             }
         }

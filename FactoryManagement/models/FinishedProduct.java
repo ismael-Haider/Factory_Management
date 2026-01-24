@@ -3,8 +3,8 @@ package FactoryManagement.models;
 import java.util.Objects;
 
 public class FinishedProduct {
-    private int productId; // Links to Product.Id
-    private String name; // Derived from Product
+    private int productId;
+    private String name;
     private int quantity;
 
     public FinishedProduct(int productId, String name, int quantity) {
@@ -13,7 +13,6 @@ public class FinishedProduct {
         this.quantity = quantity;
     }
 
-    // Getters and Setters
     public int getProductId() {
         return productId;
     }
@@ -38,7 +37,6 @@ public class FinishedProduct {
         this.quantity -= quantity;
     }
 
-    // CSV Serialization
     public String toCSV() {
         return productId + "," + name + "," + quantity;
     }

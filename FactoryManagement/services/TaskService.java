@@ -36,8 +36,9 @@ public class TaskService {
                     .addQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100));
         }
         ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
-        if(ProductLineService.getProductLineById(task.getProductLineId()).get().getStatus()!=FactoryManagement.models.enums.ProductLineStatus.MAINTENANCE){
-        ProductLineService.getProductLineById(task.getProductLineId()).get().stop();
+        if (ProductLineService.getProductLineById(task.getProductLineId()).get()
+                .getStatus() != FactoryManagement.models.enums.ProductLineStatus.MAINTENANCE) {
+            ProductLineService.getProductLineById(task.getProductLineId()).get().stop();
         }
         if (task.getStatus().equals(TaskStatus.IN_QUEUE)) {
             task.setStatus(TaskStatus.CANCELLED);
@@ -55,13 +56,10 @@ public class TaskService {
 
         List<Task> cancelled = tasks.stream().filter(t -> t.getStatus() == TaskStatus.CANCELLED
                 && t.getProductId() == task.getProductId() && t.getPercentage() > 0).toList();
-        System.out.println(cancelled);
         if (cancelled.size() > 0) {
-            System.out.println("hello bitch");
             double q = 0;
             for (Task t : cancelled) {
                 q = (t.getQuantity() * t.getPercentage() / 100.0);
-                // System.out.println((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
                 task.addPercentage((Math.min(task.getQuantity(), q) * 100 / task.getQuantity()));
                 t.setPercentage((q - Math.min(task.getQuantity(), q)) * 100 / t.getQuantity());
                 task.setStatus(TaskStatus.IN_QUEUE);
@@ -76,19 +74,19 @@ public class TaskService {
             if (itemOpt.isEmpty()) {
                 ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
                 throw new IllegalArgumentException("Item with ID " + i + " does not exist.");
-            } 
+            }
             Item item = itemOpt.get();
             double required = items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0;
             if (item.getQuantity() < required) {
                 ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
-                throw new IllegalArgumentException("Insufficient quantity for item " + item.getName() + ". Required: " + required + ", Available: " + item.getQuantity());
+                throw new IllegalArgumentException("Insufficient quantity for item " + item.getName() + ". Required: "
+                        + required + ", Available: " + item.getQuantity());
             }
         }
-        
+
         tasks.add(task);
         if (task.getPercentage() == 100) {
             finishTask(task.getId());
-            // System.out.println("hi");
             ProductLineService.getProductLineById(task.getProductLineId()).get().removeTask(task.getId());
             return;
         }
@@ -97,8 +95,6 @@ public class TaskService {
                     .reduceQuantity((int) (items.get(i) * task.getQuantity() * (100 - task.getPercentage()) / 100.0));
         }
         task.setStatus(FactoryManagement.models.enums.TaskStatus.IN_QUEUE);
-        // productLineService.getProductLineById(task.getProductLineId()).get().addTask(task.getId());
-        // // add task to product line task.getProductLineId()
     }
 
     public static synchronized Optional<Task> getTaskById(int id) {
@@ -110,8 +106,7 @@ public class TaskService {
     }
 
     public static synchronized void updateTask(Task updatedTask) {
-    tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask :
-    task);
+        tasks.replaceAll(task -> task.getId() == updatedTask.getId() ? updatedTask : task);
     }
 
     public static synchronized void deleteTask(int id) {

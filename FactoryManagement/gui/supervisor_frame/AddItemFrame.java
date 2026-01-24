@@ -34,7 +34,6 @@ public class AddItemFrame extends JFrame {
 
         initUI();
 
-        // Stop locking when frame closes
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
@@ -146,16 +145,17 @@ public class AddItemFrame extends JFrame {
                 boolean sucsses = controller.add_item(name, category, price, qty, minQty);
                 if (!sucsses) {
                     JOptionPane.showMessageDialog(this, "Quantity must be greater than or equal to Min Quantity");
-                    controller.recordError("Quantity" + qty + " is less than Min Quantity " + minQty + ": in AddItemFrame");
+                    controller.recordError(
+                            "Quantity" + qty + " is less than Min Quantity " + minQty + ": in AddItemFrame");
                     return;
                 }
-                onSuccess.run(); // تحديث الجدول
+                onSuccess.run();
                 dispose();
             } else {
-                controller.update_item(item.getId(),name, category, price, qty, minQty);
-                onSuccess.run(); 
+                controller.update_item(item.getId(), name, category, price, qty, minQty);
+                onSuccess.run();
                 dispose();
-                
+
             }
 
         } catch (NumberFormatException ex) {

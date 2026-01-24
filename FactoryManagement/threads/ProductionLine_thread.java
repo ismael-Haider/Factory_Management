@@ -17,26 +17,22 @@ public class ProductionLine_thread extends Thread {
         while (running) {
             if (productLine.getStatus().equals(FactoryManagement.models.enums.ProductLineStatus.MAINTENANCE)) {
                 try {
-                int taskId = productLine.peekTask();
-                FactoryManagement.models.Task task = TaskService.getTaskById(taskId).get();
-                task.setStatus(FactoryManagement.models.enums.TaskStatus.IN_QUEUE);
-                Thread.sleep((int)(1000));
+                    int taskId = productLine.peekTask();
+                    FactoryManagement.models.Task task = TaskService.getTaskById(taskId).get();
+                    task.setStatus(FactoryManagement.models.enums.TaskStatus.IN_QUEUE);
+                    Thread.sleep((int) (1000));
                 } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                    Thread.currentThread().interrupt();
                 }
                 continue;
             }
 
-            // stop doesnt mean that pruduction line is closed it is just not working
-            // because there is no task
             if (productLine.getStatus().equals(FactoryManagement.models.enums.ProductLineStatus.STOP)
                     && !productLine.isQueueEmpty()) {
-
                 int taskId = productLine.peekTask();
                 FactoryManagement.models.Task task = TaskService.getTaskById(taskId).get();
                 if (task.getStatus().equals(FactoryManagement.models.enums.TaskStatus.CANCELLED)) {
                     productLine.pollTask();
-                    // add update after edit the task queue
                     ProductLineService.updateProductLine(productLine);
                     continue;
                 }
@@ -68,7 +64,6 @@ public class ProductionLine_thread extends Thread {
                 }
                 if (task.getStatus().equals(FactoryManagement.models.enums.TaskStatus.CANCELLED)) {
                     productLine.pollTask();
-                    // here update productLine 
                     ProductLineService.updateProductLine(productLine);
                     continue;
                 }
@@ -81,9 +76,7 @@ public class ProductionLine_thread extends Thread {
                     TaskService.updateTask(task);
                 }
                 ProductLineService.updateProductLine(productLine);
-
-            }// add this to check 
-            else if(productLine.isQueueEmpty()){
+            } else if (productLine.isQueueEmpty()) {
                 productLine.setStatus(FactoryManagement.models.enums.ProductLineStatus.STOP);
                 ProductLineService.updateProductLine(productLine);
             }

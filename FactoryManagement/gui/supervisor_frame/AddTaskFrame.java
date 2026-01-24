@@ -16,7 +16,7 @@ import FactoryManagement.models.ProductLine;
 
 public class AddTaskFrame extends JFrame {
 
-    private JComboBox<Product> productBox; // ComboBox بالـ Product نفسه
+    private JComboBox<Product> productBox;
     private JComboBox<ProductLine> lineBox;
     private JTextField qtyField, clientField, startDateField, endDateField;
     private JButton saveBtn, cancelBtn;
@@ -29,7 +29,6 @@ public class AddTaskFrame extends JFrame {
     private Runnable onSuccess;
     private Product selectedProduct;
 
-    // لتخزين بيانات المنتج الجديد قبل حفظه
     private HashMap<Integer, Integer> newProductItems_id_qty;
     private String newProductName;
 
@@ -59,16 +58,14 @@ public class AddTaskFrame extends JFrame {
         form.setBackground(BG);
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // ================= PRODUCT COMBO =================
         productBox = new JComboBox<>();
         productBox.addItem(new Product("New", new HashMap<>()));
-        Product.counter--; // كائن جديد يمثل خيار New
+        Product.counter--;
         List<Product> products = controller.viewAllProducts();
         for (Product p : products) {
             productBox.addItem(p);
         }
 
-        // عرض الاسم فقط
         productBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
             JLabel label = new JLabel(value.getName());
             label.setOpaque(true);
@@ -84,8 +81,6 @@ public class AddTaskFrame extends JFrame {
             if (selected == null)
                 return;
             if ("New".equals(selected.getName())) {
-                // منتج جديد -> اطلب اسم وعناصر
-                // openNewProductDialog return hashMap
                 newProductItems_id_qty = openNewProductDialog();
                 while (newProductItems_id_qty.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "You must add at least one item!");
@@ -96,22 +91,18 @@ public class AddTaskFrame extends JFrame {
                 qtyField.setEditable(true);
                 newProductName = askForProductName();
                 if (newProductName == null) {
-                    // User cancelled name entry; revert selection and stop processing
                     productBox.setSelectedIndex(0);
                     return;
                 }
-                System.out.println(newProductName + "" + newProductItems_id_qty);
             } else {
                 HashMap<Integer, Integer> totalQty = selected.getItemQuantities();
                 newProductItems_id_qty = totalQty;
                 newProductName = selected.getName();
-                System.out.println(newProductName + "" + newProductItems_id_qty);
             }
             selected.setName(newProductName);
             productBox.repaint();
         });
 
-        // ================= PRODUCT LINE COMBO =================
         if (controller.viewAllProductLines().isEmpty()) {
             productBox.addItem(new Product("No Product Line", new HashMap<>()));
             Product.counter--;
@@ -144,17 +135,17 @@ public class AddTaskFrame extends JFrame {
             }
         });
 
-        qtyField.addActionListener(e -> { // Enter → Client field
+        qtyField.addActionListener(e -> {
             if (!qtyField.getText().equals(""))
                 clientField.requestFocus();
         });
 
-        clientField.addActionListener(e -> { // Enter → End Date field
+        clientField.addActionListener(e -> {
             if (!clientField.getText().equals(""))
                 endDateField.requestFocus();
         });
 
-        endDateField.addActionListener(e -> { // Enter → Save button
+        endDateField.addActionListener(e -> {
             if (!endDateField.getText().equals(""))
                 saveBtn.doClick();
         });
@@ -212,18 +203,13 @@ public class AddTaskFrame extends JFrame {
         b.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
     }
 
-    // ================= SAVE LOGIC =================
     private void saveTask() {
         try {
 
             ProductLine pl = (ProductLine) lineBox.getSelectedItem();
-            System.out.println(pl);
             int quantity = Integer.parseInt(qtyField.getText().trim());
-            System.out.println(quantity);
             String client = clientField.getText().trim();
-            System.out.println(client);
             LocalDate start = LocalDate.parse(startDateField.getText().trim());
-            System.out.println(start);
             String eDate = endDateField.getText().trim();
 
             if (eDate.equals("yyyy-mm-dd") || eDate.equals("")) {
@@ -236,16 +222,11 @@ public class AddTaskFrame extends JFrame {
                 controller.recordError("End Date cannot be before Start Date");
                 return;
             }
-            
+
             Product selected = (Product) productBox.getSelectedItem();
-            System.out.println(selected);
 
-            
-
-            // If the product name does not already exist, create it; otherwise use existing product id
             if (!controller.productNameExists(newProductName)) {
                 controller.addTask(newProductName, newProductItems_id_qty, quantity, client, start, end, pl.getId());
-                System.out.println("created");
             } else {
                 controller.addTask(selected.getId(), quantity, client, start, end, pl.getId());
             }
@@ -255,10 +236,9 @@ public class AddTaskFrame extends JFrame {
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-MM-dd");
             return;
-        }
-        catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             controller.recordError(ex.getMessage());
-            JOptionPane.showMessageDialog(this,ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
 
         catch (Exception ex) {
@@ -267,14 +247,12 @@ public class AddTaskFrame extends JFrame {
         }
     }
 
-    // dialog to create new product
     private HashMap<Integer, Integer> openNewProductDialog() {
         DefaultTableModel model = new DefaultTableModel(new String[] { "Item Name", "Quantity" }, 0);
         JTable table = new JTable(model);
         JButton addRow = new JButton("Add Row");
         JButton deleteRow = new JButton("Delete Selected Row");
 
-        /////
         deleteRow.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
@@ -287,7 +265,6 @@ public class AddTaskFrame extends JFrame {
             model.removeRow(selectedRow);
         });
 
-        /////
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttons.add(addRow);
         buttons.add(deleteRow);
@@ -307,7 +284,6 @@ public class AddTaskFrame extends JFrame {
             for (int i = 0; i < model.getRowCount(); i++) {
                 String itemName = (String) model.getValueAt(i, 0);
                 int qty = Integer.parseInt(model.getValueAt(i, 1).toString().trim());
-                // i need to function to search on items by name it
                 int id = controller.searchByName(itemName);
                 if (qty <= 0 || id == 0) {
                     JOptionPane.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
@@ -323,7 +299,7 @@ public class AddTaskFrame extends JFrame {
     private String askForProductName() {
         while (true) {
             String name = JOptionPane.showInputDialog(this, "Enter name for new product:");
-            if (name == null) // user cancelled
+            if (name == null)
                 return null;
             name = name.trim();
             if (name.isEmpty()) {

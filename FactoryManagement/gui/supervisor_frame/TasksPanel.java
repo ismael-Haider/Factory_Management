@@ -27,54 +27,48 @@ public class TasksPanel extends JPanel {
 
     public TasksPanel(TasksController controller) {
         this.controller = controller;
-        setLayout(new BorderLayout(10, 10)); // Add some spacing
+        setLayout(new BorderLayout(10, 10));
         setBackground(new Color(245, 245, 245));
 
-        // Create a main container with padding on left and right
         JPanel mainContainer = new JPanel(new BorderLayout(10, 10));
         mainContainer.setBackground(new Color(245, 245, 245));
-        mainContainer.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Top, left, bottom, right
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // Initialize UI sections
         JPanel topBar = initTop();
         JScrollPane tableScrollPane = initTable();
         JPanel bottomBar = initBottom();
 
-        // Add components to main container
         mainContainer.add(topBar, BorderLayout.NORTH);
         mainContainer.add(tableScrollPane, BorderLayout.CENTER);
         mainContainer.add(bottomBar, BorderLayout.SOUTH);
 
-        // Add main container to this panel
         add(mainContainer, BorderLayout.CENTER);
 
         enableClearSelectionOnOutsideClick();
         startAutoRefresh();
         setupShortcuts();
     }
-    
-private void setupShortcuts() {
-    InputMap im = this.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-    ActionMap am = this.getActionMap();
 
-    // Alt + A → Add Task
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), "addTask");
-    am.put("addTask", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            addTaskBtn.doClick();
-        }
-    });
+    private void setupShortcuts() {
+        InputMap im = this.getInputMap(WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = this.getActionMap();
 
-    // Alt + C → Cancel Task
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), "cancelTask");
-    am.put("cancelTask", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            cancelBtn.doClick();
-        }
-    });
-}
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), "addTask");
+        am.put("addTask", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addTaskBtn.doClick();
+            }
+        });
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), "cancelTask");
+        am.put("cancelTask", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancelBtn.doClick();
+            }
+        });
+    }
 
     private JPanel initTop() {
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
@@ -93,7 +87,6 @@ private void setupShortcuts() {
         filterPanel.add(filterLabel, BorderLayout.NORTH);
         filterPanel.add(filterBoxbyTaskStatus, BorderLayout.CENTER);
 
-        // ===== Filter by Product Line =====
         JPanel lineFilterPanel = new JPanel(new BorderLayout(0, 5));
         lineFilterPanel.setOpaque(false);
 
@@ -132,7 +125,6 @@ private void setupShortcuts() {
         productFilterPanel.add(productLabel, BorderLayout.NORTH);
         productFilterPanel.add(searchOntasksbyProductName, BorderLayout.CENTER);
 
-        // أضفهم للـ top
         top.add(filterPanel);
         top.add(lineFilterPanel);
         top.add(productFilterPanel);
@@ -143,103 +135,84 @@ private void setupShortcuts() {
         model = new TaskTableModel();
         table = new JTable(model);
 
-        // Style the table
-        table.setRowHeight(35); // Increased row height
-        table.setFont(table.getFont().deriveFont(14f)); // Larger font
-        table.setIntercellSpacing(new Dimension(10, 6)); // More spacing between cells
+        table.setRowHeight(35);
+        table.setFont(table.getFont().deriveFont(14f));
+        table.setIntercellSpacing(new Dimension(10, 6));
 
-        // Style the table header
         JTableHeader header = table.getTableHeader();
         header.setFont(header.getFont().deriveFont(Font.BOLD, 14f));
         header.setBackground(new Color(52, 73, 94));
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40));
 
-        // Table styling
         table.setGridColor(new Color(220, 220, 220));
         table.setShowGrid(true);
         table.setSelectionBackground(table.getSelectionBackground());
 
-
-        // Prevent column drag
         table.getTableHeader().setReorderingAllowed(false);
 
-        // Center align all columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < table.getColumnCount(); i++) {
-            if (i != 7 && i != 8) { // Don't apply to Status and Progress columns
+            if (i != 7 && i != 8) {
                 table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
         }
 
-        // Custom renderer for Status column
         table.getColumn("Status").setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
             JLabel label = new JLabel(value.toString());
             label.setOpaque(true);
             label.setHorizontalAlignment(JLabel.CENTER);
             label.setFont(label.getFont().deriveFont(Font.BOLD));
 
-            // if (isSelected) {
-            //     table.setSelectionBackground(table.getSelectionBackground());
+            String status = value.toString();
+            switch (status) {
+                case "IN_QUEUE":
+                    label.setBackground(Color.gray);
+                    label.setForeground(Color.WHITE);
+                    break;
+                case "FINISHED":
+                    label.setBackground(new Color(200, 255, 200));
+                    label.setForeground(new Color(39, 174, 96));
+                    break;
+                case "CANCELLED":
+                    label.setBackground(new Color(255, 200, 200));
+                    label.setForeground(new Color(192, 57, 43));
+                    break;
+                case "IN_PROGRESS":
+                    label.setBackground(new Color(200, 220, 255));
+                    label.setForeground(new Color(41, 128, 185));
+                    break;
+                default:
+                    label.setBackground(Color.WHITE);
+                    label.setForeground(Color.BLACK);
+            }
 
-            // } else {
-                String status = value.toString();
-                switch (status) {
-                    case "IN_QUEUE":
-                        label.setBackground(Color.gray); // Light blue
-                        label.setForeground(Color.WHITE);
-                        break;
-                    case "FINISHED":
-                        label.setBackground(new Color(200, 255, 200)); // Light green
-                        label.setForeground(new Color(39, 174, 96));
-                        break;
-                    case "CANCELLED":
-                        label.setBackground(new Color(255, 200, 200)); // Light red
-                        label.setForeground(new Color(192, 57, 43));
-                        break;
-                    case "IN_PROGRESS":
-                        label.setBackground(new Color(200, 220, 255)); // Light red
-                        label.setForeground(new Color(41, 128, 185));
-                        break;
-                    default:
-                        label.setBackground(Color.WHITE);
-                        label.setForeground(Color.BLACK);
-                }
-            
             return label;
         });
 
-        // Progress bar renderer
         table.getColumn("Progress %").setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
             JProgressBar bar = new JProgressBar(0, 100);
             bar.setValue((int) value);
             bar.setStringPainted(true);
             bar.setFont(bar.getFont().deriveFont(12f));
 
-            // Color the progress bar based on value
             if ((int) value < 50) {
-                bar.setForeground(new Color(192, 57, 43)); // Red
+                bar.setForeground(new Color(192, 57, 43));
                 bar.setBackground(new Color(255, 200, 200));
             } else if ((int) value < 100) {
-                bar.setForeground(new Color(241, 196, 15)); // Yellow
+                bar.setForeground(new Color(241, 196, 15));
                 bar.setBackground(new Color(255, 255, 200));
             } else {
-                bar.setForeground(new Color(39, 174, 96)); // Green
+                bar.setForeground(new Color(39, 174, 96));
                 bar.setBackground(new Color(200, 255, 200));
             }
-
-            // Style for selection
-            // if (isSelected) {
-            //     bar.setBorder(BorderFactory.createLineBorder(new Color(52, 152, 219), 2));
-            // }
 
             return bar;
         });
 
-        // Create scroll pane with table
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(1100, 450)); // Make the table larger
+        scrollPane.setPreferredSize(new Dimension(1100, 450));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(10, 0, 10, 0),
                 BorderFactory.createLineBorder(new Color(200, 200, 200), 1)));
@@ -252,7 +225,6 @@ private void setupShortcuts() {
         bottom.setBackground(new Color(245, 245, 245));
         bottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // Create styled buttons
         cancelBtn = createStandardButton("Cancel Task");
         addTaskBtn = createStandardButton("Add Task");
 
@@ -265,9 +237,6 @@ private void setupShortcuts() {
         return bottom;
     }
 
-    /**
-     * Helper method to create standard buttons
-     */
     private JButton createStandardButton(String text) {
         JButton button = new JButton(text);
         button.setFocusable(false);
@@ -277,7 +246,6 @@ private void setupShortcuts() {
         button.setPreferredSize(new Dimension(150, 40));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -314,7 +282,6 @@ private void setupShortcuts() {
         model.setRowCount(0);
 
         List<Task> tasks = controller.viewAllTasks();
-        // filter by task's status
         String statusFilter = filterBoxbyTaskStatus.getSelectedItem().toString();
         if (!"ALL".equals(statusFilter)) {
             tasks = tasks.stream()
@@ -322,7 +289,6 @@ private void setupShortcuts() {
                     .toList();
         }
 
-        // filter by product line ID
         String lineFilter = (String) searchOnTasksbyProductLineID.getSelectedItem();
         if (!"ALL".equals(lineFilter)) {
             int lineId = Integer.parseInt(lineFilter.split(" - ")[0]);
@@ -331,7 +297,6 @@ private void setupShortcuts() {
                     .toList();
         }
 
-        // filter by product ID
         String productFilter = (String) searchOntasksbyProductName.getSelectedItem();
         if (!"ALL".equals(productFilter)) {
             int productId = Integer.parseInt(productFilter.split(" - ")[0]);
@@ -415,7 +380,6 @@ private void setupShortcuts() {
     }
 }
 
-// TaskTableModel class (assuming it exists)
 class TaskTableModel extends DefaultTableModel {
     private final String[] COLUMN_NAMES = {
             "ID", "Product", "Quantity", "Client", "Start Date",
@@ -439,14 +403,14 @@ class TaskTableModel extends DefaultTableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
-            case 0: // ID
-            case 2: // Quantity
+            case 0:
+            case 2:
                 return Integer.class;
-            case 8: // Progress %
+            case 8:
                 return Integer.class;
-            case 4: // Start Date
-            case 5: // Delivered Date
-                return Object.class; // Assuming these are Date objects
+            case 4:
+            case 5:
+                return Object.class;
             default:
                 return String.class;
         }
@@ -454,6 +418,6 @@ class TaskTableModel extends DefaultTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return false; // Make table non-editable
+        return false;
     }
 }

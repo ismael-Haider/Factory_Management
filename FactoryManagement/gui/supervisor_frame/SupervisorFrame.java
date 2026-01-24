@@ -53,20 +53,17 @@ public class SupervisorFrame extends JFrame {
         InputMap im = mainContentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = mainContentPanel.getActionMap();
 
-        // Ctrl + Tab -> Next panel
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "switchPanel");
         am.put("switchPanel", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 currentIndex = (currentIndex + 1) % panelNames.length;
                 cardLayout.show(mainContentPanel, panelNames[currentIndex]);
-                // تحديث ألوان الأزرار
                 updateButtonColors();
             }
         });
     }
 
-    // تحديث ألوان الأزرار حسب اللوحة الحالية
     private void updateButtonColors() {
         switch (panelNames[currentIndex]) {
             case "INVENTORY":
@@ -86,9 +83,8 @@ public class SupervisorFrame extends JFrame {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setResizable(true);
 
-        setSize(1300, 820); // Increased size to accommodate larger table
+        setSize(1300, 820);
         setLocationRelativeTo(null);
-        // Save on exit
         addWindowListener(new WindowAdapter() {
 
             @Override
@@ -99,7 +95,6 @@ public class SupervisorFrame extends JFrame {
                         "Confirm Exit",
                         JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
-                    // Save notes and ratings
                     tasksController.save();
                     dispose();
                     System.exit(0);
@@ -110,12 +105,10 @@ public class SupervisorFrame extends JFrame {
             }
         });
 
-        // Top panel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(INACTIVE_COLOR);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25)); // Added left and right padding
+        topPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
 
-        // Left panel - Supervisor name
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
         leftPanel.setOpaque(false);
 
@@ -130,7 +123,6 @@ public class SupervisorFrame extends JFrame {
         leftPanel.add(supervisorLabel);
         leftPanel.add(supervisorNameLabel);
 
-        // Center panel - Buttons
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 10));
         centerPanel.setOpaque(false);
 
@@ -171,7 +163,6 @@ public class SupervisorFrame extends JFrame {
         centerPanel.add(manageTasksBtn);
         centerPanel.add(finishedProductsBtn);
 
-        // Right panel - Logout button
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 18));
         rightPanel.setOpaque(false);
 
@@ -189,17 +180,14 @@ public class SupervisorFrame extends JFrame {
 
         rightPanel.add(logoutBtn);
 
-        // Add all panels to top panel
         topPanel.add(leftPanel, BorderLayout.WEST);
         topPanel.add(centerPanel, BorderLayout.CENTER);
         topPanel.add(rightPanel, BorderLayout.EAST);
 
-        // Main content panel
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
         mainContentPanel.setBackground(new Color(245, 245, 245));
 
-        // Create a wrapper panel with padding
         JPanel contentWrapper = new JPanel(new BorderLayout());
         contentWrapper.setBackground(new Color(245, 245, 245));
         contentWrapper.add(mainContentPanel, BorderLayout.CENTER);
@@ -208,7 +196,6 @@ public class SupervisorFrame extends JFrame {
         mainScrollPane.setBorder(null);
         mainScrollPane.getViewport().setBackground(new Color(245, 245, 245));
 
-        // Layout main frame
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
         add(mainScrollPane, BorderLayout.CENTER);
@@ -217,7 +204,6 @@ public class SupervisorFrame extends JFrame {
     private void setupShortcut() {
         InputMap im = mainContentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = mainContentPanel.getActionMap();
-        // Ctrl + A -> Logout
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK), "logout");
         am.put("logout", new AbstractAction() {
             @Override
