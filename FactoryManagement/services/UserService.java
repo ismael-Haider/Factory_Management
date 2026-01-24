@@ -64,14 +64,15 @@ public class UserService {
         try {
             users = CsvReader.readUsers(Constants.USERS_CSV);
             if (users.isEmpty()) {
-                User defaultManager = new User("manager", "password", UserRole.MANAGER);
+                User defaultManager = new User(1,"manager", "password", UserRole.MANAGER,false);
                 users.add(defaultManager);
             } else if (users.getFirst().getRole() != UserRole.MANAGER) {
                 throw new Exception("the users file is corrupted, Call The Support Team");
             }
             return true;
         } catch (IOException e) {
-            User defaultManager = new User("manager", "password", UserRole.MANAGER);
+            
+            User defaultManager = new User(1,"manager", "password", UserRole.MANAGER,false);
             users.add(defaultManager);
             return true;
         } catch (Exception e) {

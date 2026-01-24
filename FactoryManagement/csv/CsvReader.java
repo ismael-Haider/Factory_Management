@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import FactoryManagement.models.Note;
+
 public class CsvReader {
     public static List<FactoryManagement.models.Item> readItems(String fileName) {
         List<FactoryManagement.models.Item> items = new ArrayList<>();
@@ -110,19 +112,24 @@ public class CsvReader {
         return users;
     }
 
-    public static List<FactoryManagement.models.Note> readNotes(String fileName) {
-        List<FactoryManagement.models.Note> notes = new ArrayList<>();
+public static List<Note> readNotes(String fileName) {
+        List<Note> notes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                notes.add(FactoryManagement.models.Note.fromCSV(line));
+            Note currentNote = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("note,") || line.startsWith("rating,")) {
+                    // note أو rating جديد
+                    currentNote = Note.fromCSV(line);
+                    notes.add(currentNote);
+                } else {
+                    // سطر مكمل للنص
+                    if (currentNote != null && currentNote.getType().equals("note")) {
+                        currentNote.note += "\n" + line;
+                    }
+                }
             }
         } catch (IOException e) {
-            try {
-                CsvWriter.saveError(fileName + " doesn't exist");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
             return new ArrayList<>();
         }
         return notes;

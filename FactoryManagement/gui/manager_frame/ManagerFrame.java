@@ -18,6 +18,7 @@ public class ManagerFrame extends JFrame {
     private JPanel mainContentPanel;
     private final Color ACTIVE_COLOR = new Color(26, 188, 156);
     private final Color INACTIVE_COLOR = new Color(44, 62, 80);
+    private final Color HOVER_COLOR = new Color(22, 160, 133);
     private ManagerController managerController;
     private JButton manageSupervisorsBtn;
     private JButton manageProductLinesBtn;
@@ -31,6 +32,9 @@ public class ManagerFrame extends JFrame {
     public ManagerFrame(User user) {
         managerController = new ManagerController();
         this.user = user;
+        ImageIcon icon = new ImageIcon(
+                getClass().getResource("../../res/icon.png"));
+        this.setIconImage(icon.getImage());
         initUI();
         initPanels();
         setActiveButton(manageSupervisorsBtn, manageProductLinesBtn, manageNotesBtn);
@@ -38,6 +42,26 @@ public class ManagerFrame extends JFrame {
         setupShortcut();
         setupCtrlZ();
     }
+
+        private void addHoverEffect(JButton button) {
+    button.addMouseListener(new java.awt.event.MouseAdapter() {
+
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent e) {
+            if (button.getBackground().equals(INACTIVE_COLOR)) {
+                button.setBackground(HOVER_COLOR);
+            }
+        }
+
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent e) {
+            if (button.getBackground().equals(HOVER_COLOR)) {
+                button.setBackground(INACTIVE_COLOR);
+            }
+        }
+    });
+}
+
 
     private void initUI() {
         setTitle("Manager Dashboard");
@@ -117,7 +141,9 @@ public class ManagerFrame extends JFrame {
             cardLayout.show(mainContentPanel, "NOTES");
             setActiveButton(manageNotesBtn, manageSupervisorsBtn, manageProductLinesBtn);
         });
-
+        addHoverEffect(manageNotesBtn);
+        addHoverEffect(manageProductLinesBtn);
+        addHoverEffect(manageSupervisorsBtn);
         centerPanel.add(manageSupervisorsBtn);
         centerPanel.add(manageProductLinesBtn);
         centerPanel.add(manageNotesBtn);

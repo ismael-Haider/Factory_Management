@@ -16,7 +16,6 @@ public class AddItemFrame extends JFrame {
     private final Color BG = new Color(236, 240, 241);
     private final Color PRIMARY = new Color(44, 62, 80);
     private final Color ACCENT = new Color(26, 188, 156);
-    private Robot robot;
     private Timer lockTimer;
     private Item item;
 
@@ -24,7 +23,9 @@ public class AddItemFrame extends JFrame {
         this.controller = controller;
         this.onSuccess = onSuccess;
         this.item = item;
-
+        ImageIcon icon = new ImageIcon(
+                getClass().getResource("../../res/icon.png"));
+        this.setIconImage(icon.getImage());
         setTitle(item == null ? "Add Item" : "Update Item");
         setSize(400, 420);
         setLocationRelativeTo(null);
