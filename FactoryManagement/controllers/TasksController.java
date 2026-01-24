@@ -55,19 +55,6 @@ public class TasksController {
         return ItemService.getAllItems();
     }
 
-    // here why i need this function
-    // public List<Item> viewAvaleableItems() {
-    //     List<Item> allItems = ItemService.getAllItems();
-    //     List<Item> newList = new ArrayList<>();
-    //     for (Item item : allItems) {
-    //         if (item.getQuantity() > 0) {
-    //             newList.add(item);
-    //         }
-    //     }
-    //     return newList;
-    // }
-
-    // search on item by name on it and return the id for the hash map for the
     public int searchByName(String name) {
         List<Item> items = ItemService.getAllItems();
         for (Item item : items) {
@@ -77,6 +64,7 @@ public class TasksController {
         }
         return 0;
     }
+
     public boolean productNameExists(String name) {
         if (name == null)
             return false;
@@ -113,9 +101,11 @@ public class TasksController {
                 newList.add(t);
         return newList;
     }
-    public Product searchProductById(int id){
+
+    public Product searchProductById(int id) {
         return ProductService.getProductById(id).get();
     }
+
     public ProductLine searchProductLineById(int id) {
         return ProductLineService.getProductLineById(id).get();
     }
@@ -189,27 +179,31 @@ public class TasksController {
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse(-1);
-        if (mostRequestedId == -1) return null;
+        if (mostRequestedId == -1)
+            return null;
         return ProductService.getProductById(mostRequestedId).orElse(null);
     }
 
-    public HashMap<ProductLine,List<FinishedProduct>> viewFinishedProductsByAllProductLine(){
+    public HashMap<ProductLine, List<FinishedProduct>> viewFinishedProductsByAllProductLine() {
         HashMap<ProductLine, List<FinishedProduct>> map = new HashMap<>();
         List<ProductLine> productLines = ProductLineService.getAllProductLines();
-        System.out.println(productLines);
         for (ProductLine pl : productLines) {
             List<FinishedProduct> fininshedproductsInLine = new ArrayList<>();
             List<Task> tasks = viewTasksByProductLine(pl.getId());
-            
-            tasks=tasks.stream().filter(t->(t.getStatus().equals(TaskStatus.FINISHED)||t.getStatus().equals(TaskStatus.CANCELLED))&&
-                !t.isDelivered()&&
-                t.getPercentage()>0).toList();
-                
-            for (Task t:tasks){
-                FinishedProduct p = new FinishedProduct(t.getProductId(), ProductService.getProductById(t.getProductId()).get().getName(),(int)(t.getQuantity()*t.getPercentage()/100.0));
-                if (fininshedproductsInLine.stream().anyMatch(o->o.getName().equals(p.getName()))) {
-                    FinishedProduct old=fininshedproductsInLine.get(fininshedproductsInLine.indexOf(p));
-                    old.setQuantity(old.getQuantity()+p.getQuantity());
+
+            tasks = tasks.stream().filter(
+                    t -> (t.getStatus().equals(TaskStatus.FINISHED) || t.getStatus().equals(TaskStatus.CANCELLED)) &&
+                            !t.isDelivered() &&
+                            t.getPercentage() > 0)
+                    .toList();
+
+            for (Task t : tasks) {
+                FinishedProduct p = new FinishedProduct(t.getProductId(),
+                        ProductService.getProductById(t.getProductId()).get().getName(),
+                        (int) (t.getQuantity() * t.getPercentage() / 100.0));
+                if (fininshedproductsInLine.stream().anyMatch(o -> o.getName().equals(p.getName()))) {
+                    FinishedProduct old = fininshedproductsInLine.get(fininshedproductsInLine.indexOf(p));
+                    old.setQuantity(old.getQuantity() + p.getQuantity());
                     continue;
                 }
                 fininshedproductsInLine.add(p);
@@ -236,7 +230,8 @@ public class TasksController {
                 .forEach(pl -> pl.setStatus(FactoryManagement.models.enums.ProductLineStatus.STOP));
         System.exit(0);
     }
+
     public void recordError(String errorMessage) {
-       Exceptions.saveError(errorMessage);
+        Exceptions.saveError(errorMessage);
     }
 }

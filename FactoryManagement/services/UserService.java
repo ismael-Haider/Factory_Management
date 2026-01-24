@@ -31,7 +31,6 @@ public class UserService {
         return users.stream().filter(user -> user.getUserName().equals(userName)).findFirst();
     }
 
-
     public static synchronized List<User> getAllUsers() {
         return new ArrayList<>(users);
     }
@@ -43,50 +42,46 @@ public class UserService {
     public static synchronized void deleteUser(int id) {
         users.removeIf(user -> user.getId() == id);
     }
-// Remember Me functionality
+
     public static synchronized void rememberUser(User user) {
         user.setRemember(true);
         updateUser(user);
         saveUsers();
     }
-// Disremember Me functionality
+
     public static synchronized void disrememberUser(User user) {
         user.setRemember(false);
         updateUser(user);
         saveUsers();
     }
-//...
-    // Authenticate user (for login simulation)
+
     public static synchronized Optional<User> authenticate(String userName, String password) {
-        return users.stream().filter(user -> user.getUserName().equals(userName) && user.getPassword().equals(password)).findFirst();
+        return users.stream().filter(user -> user.getUserName().equals(userName) && user.getPassword().equals(password))
+                .findFirst();
     }
 
     private static Boolean loadUsers() {
         try {
             users = CsvReader.readUsers(Constants.USERS_CSV);
-            // Ensure at least one manager exists (as per your spec)
             if (users.isEmpty()) {
-                // Add a default manager if none exists
                 User defaultManager = new User("manager", "password", UserRole.MANAGER);
                 users.add(defaultManager);
-            } 
-            else if(users.getFirst().getRole()!=UserRole.MANAGER){
+            } else if (users.getFirst().getRole() != UserRole.MANAGER) {
                 throw new Exception("the users file is corrupted, Call The Support Team");
             }
             return true;
         } catch (IOException e) {
-            // File might not exist yet; add default manager
             User defaultManager = new User("manager", "password", UserRole.MANAGER);
             users.add(defaultManager);
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             Exceptions.saveError(e.getMessage());
             return false;
         }
-        
+
     }
 
     public static void saveUsers() {
-            CsvWriter.writeToCsv(Constants.USERS_CSV, users);
+        CsvWriter.writeToCsv(Constants.USERS_CSV, users);
     }
 }

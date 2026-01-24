@@ -11,14 +11,17 @@ public class CsvReader {
         List<FactoryManagement.models.Item> items = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 if (line.isEmpty())
                     continue;
                 items.add(FactoryManagement.models.Item.fromCSV(line));
             }
-        }catch(IOException e){
-            try{CsvWriter.saveError(fileName+" doesn't exist. ");}
-            catch(IOException ex){ex.printStackTrace();}
+        } catch (IOException e) {
+            try {
+                CsvWriter.saveError(fileName + " doesn't exist. ");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             return new ArrayList<>();
         }
         return items;
@@ -28,17 +31,17 @@ public class CsvReader {
         List<FactoryManagement.models.Product> products = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 products.add(FactoryManagement.models.Product.fromCSV(line));
             }
-        }
-        catch(IOException e){
-            try{
-                CsvWriter.saveError(fileName+" doesn't exist");
+        } catch (IOException e) {
+            try {
+                CsvWriter.saveError(fileName + " doesn't exist");
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-            catch(IOException ex){ex.printStackTrace();}
             return new ArrayList<>();
-            }
+        }
         return products;
     }
 
@@ -46,17 +49,17 @@ public class CsvReader {
         List<FactoryManagement.models.FinishedProduct> finishedProducts = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 finishedProducts.add(FactoryManagement.models.FinishedProduct.fromCSV(line));
             }
-        }
-        catch(IOException e){
-            try{
-                CsvWriter.saveError(fileName+" doesn't exist");
+        } catch (IOException e) {
+            try {
+                CsvWriter.saveError(fileName + " doesn't exist");
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-            catch(IOException ex){ex.printStackTrace();}
             return new ArrayList<>();
-            }
+        }
         return finishedProducts;
     }
 
@@ -64,17 +67,17 @@ public class CsvReader {
         List<FactoryManagement.models.Task> tasks = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 tasks.add(FactoryManagement.models.Task.fromCSV(line));
             }
-        }
-        catch(IOException e){
-            try{
-                CsvWriter.saveError(fileName+" doesn't exist");
+        } catch (IOException e) {
+            try {
+                CsvWriter.saveError(fileName + " doesn't exist");
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-            catch(IOException ex){ex.printStackTrace();}
             return new ArrayList<>();
-            }
+        }
         return tasks;
     }
 
@@ -82,17 +85,17 @@ public class CsvReader {
         List<FactoryManagement.models.ProductLine> productLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 productLines.add(FactoryManagement.models.ProductLine.fromCSV(line));
             }
-        }
-        catch(IOException e){
-            try{
-                CsvWriter.saveError(fileName+" doesn't exist");
+        } catch (IOException e) {
+            try {
+                CsvWriter.saveError(fileName + " doesn't exist");
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-            catch(IOException ex){ex.printStackTrace();}
             return new ArrayList<>();
-            }
+        }
         return productLines;
     }
 
@@ -100,7 +103,7 @@ public class CsvReader {
         List<FactoryManagement.models.User> users = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while ((line = reader.readLine()) != null&&!line.isEmpty()) {
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 users.add(FactoryManagement.models.User.fromCSV(line));
             }
         }
@@ -115,7 +118,11 @@ public class CsvReader {
                 notes.add(FactoryManagement.models.Note.fromCSV(line));
             }
         } catch (IOException e) {
-            try { CsvWriter.saveError(fileName + " doesn't exist"); } catch (IOException ex) { ex.printStackTrace(); }
+            try {
+                CsvWriter.saveError(fileName + " doesn't exist");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             return new ArrayList<>();
         }
         return notes;

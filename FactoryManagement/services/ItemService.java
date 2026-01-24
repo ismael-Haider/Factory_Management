@@ -16,7 +16,6 @@ public class ItemService {
         loadItems();
     }
 
-    ///kais
     public static synchronized void addItem(Item item) {
         String newName = item.getName() == null ? "" : item.getName().trim();
         for (Item i : items) {
@@ -34,7 +33,8 @@ public class ItemService {
     }
 
     public static synchronized Optional<Item> getItemByName(String name) {
-        if (name == null) return Optional.empty();
+        if (name == null)
+            return Optional.empty();
         String q = name.trim();
         return items.stream().filter(item -> item.getName() != null && item.getName().equalsIgnoreCase(q)).findFirst();
     }

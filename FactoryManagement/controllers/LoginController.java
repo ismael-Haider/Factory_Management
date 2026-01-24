@@ -17,23 +17,20 @@ public class LoginController {
     }
 
     public boolean login(String username, String password) {
-        username=username.toLowerCase();
-        
-        // محاكاة محاولة تسجيل الدخول
+        username = username.toLowerCase();
+
         return UserService.authenticate(username, password).map(user -> {
-            // تحقق من نوع المستخدم وافتح النافذة المناسبة
             if (user.getRole() == UserRole.MANAGER) {
                 openManagerFrame(user);
             } else if (user.getRole() == UserRole.SUPERVISOR) {
-                
+
                 openSupervisorFrame(user);
             }
             return true;
-        }).orElse(false); // إذا فشل تسجيل الدخول
+        }).orElse(false);
     }
 
     private void openManagerFrame(User user) {
-        // إنشاء وإظهار ManagerFrame
         java.awt.EventQueue.invokeLater(() -> {
             ManagerFrame managerFrame = new ManagerFrame(user);
             managerFrame.setVisible(true);
@@ -43,7 +40,6 @@ public class LoginController {
     }
 
     private void openSupervisorFrame(User user) {
-        // إنشاء وإظهار SupervisorFrame
         java.awt.EventQueue.invokeLater(() -> {
             SupervisorFrame supervisorFrame = new SupervisorFrame(user);
             supervisorFrame.setVisible(true);
@@ -51,15 +47,14 @@ public class LoginController {
         });
     }
 
-    // check if any user has " remember me " enabled
     public boolean checkRememberMe() {
-        ArrayList <User> users = (ArrayList<User>)UserService.getAllUsers();
+        ArrayList<User> users = (ArrayList<User>) UserService.getAllUsers();
         for (User user : users) {
             if (user.isRemember()) {
-                if(user.getRole() == UserRole.MANAGER){
+                if (user.getRole() == UserRole.MANAGER) {
                     openManagerFrame(user);
-                    return true;}
-                else if (user.getRole() == UserRole.SUPERVISOR){
+                    return true;
+                } else if (user.getRole() == UserRole.SUPERVISOR) {
                     openSupervisorFrame(user);
                     return true;
                 }
@@ -67,16 +62,17 @@ public class LoginController {
         }
         return false;
     }
-// to method in UserService
+
     public void rememberUser(User user) {
         UserService.rememberUser(user);
-        
+
     }
-// to method in UserService
+
     public void disrememberUser(User user) {
         UserService.disrememberUser(user);
     }
+
     public void recordError(String errorMessage) {
-       Exceptions.saveError(errorMessage);
+        Exceptions.saveError(errorMessage);
     }
 }

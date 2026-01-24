@@ -33,10 +33,10 @@ public class ProductLineService {
     }
 
     private static void loadProductLines() {
-            productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV);
+        productLines = CsvReader.readProductLines(Constants.PRODUCT_LINES_CSV);
     }
 
     public static void saveProductLines() {
-            CsvWriter.writeToCsv(Constants.PRODUCT_LINES_CSV, productLines);
+        CsvWriter.writeToCsv(Constants.PRODUCT_LINES_CSV, productLines);
     }
 }

@@ -38,53 +38,47 @@ public class ProductLinePanel extends JPanel {
         setupShortcuts();
     }
 
-private void setupShortcuts() {
-    InputMap im = this.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-    ActionMap am = this.getActionMap();
+    private void setupShortcuts() {
+        InputMap im = this.getInputMap(WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = this.getActionMap();
 
-    // Alt + A → Add Product Line
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), "addProductLine");
-    am.put("addProductLine", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            addBtn.doClick();
-        }
-    });
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), "addProductLine");
+        am.put("addProductLine", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addBtn.doClick();
+            }
+        });
 
-    // Alt + M → Set Maintenance
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_DOWN_MASK), "setMaintenance");
-    am.put("setMaintenance", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setMaintenanceBtn.doClick();
-        }
-    });
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_DOWN_MASK), "setMaintenance");
+        am.put("setMaintenance", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setMaintenanceBtn.doClick();
+            }
+        });
 
-    // Alt + S → Set Active
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK), "setActive");
-    am.put("setActive", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setUnMentenenceBtn.doClick();
-        }
-    });
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK), "setActive");
+        am.put("setActive", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setUnMentenenceBtn.doClick();
+            }
+        });
 
-    // Alt + R → Refresh
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.ALT_DOWN_MASK), "refresh");
-    am.put("refresh", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            refreshBtn.doClick();
-        }
-    });
-}
-
-
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.ALT_DOWN_MASK), "refresh");
+        am.put("refresh", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshBtn.doClick();
+            }
+        });
+    }
 
     private JScrollPane initTable() {
 
         tableModel = new DefaultTableModel(
-                new String[]{"ID", "Name", "Efficiency", "Status", "Performance", "Rating"}, 0) {
+                new String[] { "ID", "Name", "Efficiency", "Status", "Performance", "Rating" }, 0) {
 
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -133,7 +127,6 @@ private void setupShortcuts() {
         return scrollPane;
     }
 
-    // ================= RENDERER =================
     private class RatingCellRenderer extends JPanel implements TableCellRenderer {
 
         private JLabel[] stars = new JLabel[5];
@@ -172,7 +165,6 @@ private void setupShortcuts() {
         }
     }
 
-    // ================= EDITOR =================
     private class RatingCellEditor extends AbstractCellEditor implements TableCellEditor {
 
         private JPanel panel;
@@ -232,7 +224,6 @@ private void setupShortcuts() {
         }
     }
 
-    // ================= BOTTOM BAR =================
     private JPanel initBottomBar() {
 
         JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
@@ -265,7 +256,6 @@ private void setupShortcuts() {
         return btn;
     }
 
-    // ================= DATA =================
     private void loadAllProductLines() {
 
         tableModel.setRowCount(0);
@@ -278,7 +268,7 @@ private void setupShortcuts() {
             int rating = ratings.get(pl) != null ? ratings.get(pl).getRating() : 0;
             double perf = performance.get(pl);
 
-            tableModel.addRow(new Object[]{
+            tableModel.addRow(new Object[] {
                     pl.getId(),
                     pl.getName(),
                     pl.getEfficiency(),
@@ -289,69 +279,61 @@ private void setupShortcuts() {
         }
     }
 
-private void addProductLine() {
+    private void addProductLine() {
 
-    // ===== Product Line Name =====
-    String name = JOptionPane.showInputDialog(this, "Enter product line name:");
+        String name = JOptionPane.showInputDialog(this, "Enter product line name:");
 
-    // If user clicks Cancel or closes dialog
-    if (name == null) {
-        return;
-    }
-
-    // Trim to avoid spaces only
-    name = name.trim();
-
-    if (name.isEmpty()) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Please enter a valid name",
-                "Invalid Input",
-                JOptionPane.ERROR_MESSAGE
-        );
-        controller.recordError("Empty name when adding Product Line");
-        return;
-    }
-
-    // ===== Efficiency =====
-    Integer efficiency = null;
-
-    while (efficiency == null) {
-        String input = JOptionPane.showInputDialog(this, "Enter efficiency:");
-
-        // Cancel / Exit
-        if (input == null) {
+        if (name == null) {
             return;
         }
 
-        try {
-            efficiency = Integer.parseInt(input);
+        name = name.trim();
 
-            if (efficiency <= 0) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Efficiency must be greater than zero",
-                        "Invalid Input",
-                        JOptionPane.ERROR_MESSAGE
-                );
-                controller.recordError("Efficiency must be greater than zero");
-                efficiency = null; // force re-ask
-            }
-
-        } catch (NumberFormatException e) {
+        if (name.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Efficiency must be a number",
+                    "Please enter a valid name",
                     "Invalid Input",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            controller.recordError("Efficiency must be number format");
+                    JOptionPane.ERROR_MESSAGE);
+            controller.recordError("Empty name when adding Product Line");
+            return;
         }
+
+        Integer efficiency = null;
+
+        while (efficiency == null) {
+            String input = JOptionPane.showInputDialog(this, "Enter efficiency:");
+
+            if (input == null) {
+                return;
+            }
+
+            try {
+                efficiency = Integer.parseInt(input);
+
+                if (efficiency <= 0) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Efficiency must be greater than zero",
+                            "Invalid Input",
+                            JOptionPane.ERROR_MESSAGE);
+                    controller.recordError("Efficiency must be greater than zero");
+                    efficiency = null;
+                }
+
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Efficiency must be a number",
+                        "Invalid Input",
+                        JOptionPane.ERROR_MESSAGE);
+                controller.recordError("Efficiency must be number format");
+            }
+        }
+        controller.addProductLine(name, efficiency);
+        loadAllProductLines();
     }
-    // ===== Add Product Line =====
-    controller.addProductLine(name, efficiency);
-    loadAllProductLines();
-}
+
     private void setMaintenance() {
         int row = table.getSelectedRow();
         if (row != -1)

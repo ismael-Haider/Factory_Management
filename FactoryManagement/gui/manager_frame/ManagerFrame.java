@@ -46,7 +46,6 @@ public class ManagerFrame extends JFrame {
         setSize(1300, 820);
         setLocationRelativeTo(null);
 
-        // Save on exit
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -56,23 +55,19 @@ public class ManagerFrame extends JFrame {
                         "Confirm Exit",
                         JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
-                    // Save notes and ratings
                     managerController.save();
                     dispose();
                     System.exit(0);
-                }
-                else if(choice == JOptionPane.NO_OPTION){
+                } else if (choice == JOptionPane.NO_OPTION) {
                     dispose();
                     System.exit(0);
                 }
             }
         });
-        // Top panel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(INACTIVE_COLOR);
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
 
-        // Left panel - Manager name
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 20));
         leftPanel.setOpaque(false);
 
@@ -87,7 +82,6 @@ public class ManagerFrame extends JFrame {
         leftPanel.add(managerLabel);
         leftPanel.add(managerNameLabel);
 
-        // Center panel - Buttons
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 10));
         centerPanel.setOpaque(false);
 
@@ -128,7 +122,6 @@ public class ManagerFrame extends JFrame {
         centerPanel.add(manageProductLinesBtn);
         centerPanel.add(manageNotesBtn);
 
-        // Right panel - Logout button
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 18));
         rightPanel.setOpaque(false);
 
@@ -146,17 +139,14 @@ public class ManagerFrame extends JFrame {
 
         rightPanel.add(logoutBtn);
 
-        // Add all panels to top panel
         topPanel.add(leftPanel, BorderLayout.WEST);
         topPanel.add(centerPanel, BorderLayout.CENTER);
         topPanel.add(rightPanel, BorderLayout.EAST);
 
-        // Main content panel
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
         mainContentPanel.setBackground(new Color(245, 245, 245));
 
-        // Create a wrapper panel with padding
         JPanel contentWrapper = new JPanel(new BorderLayout());
         contentWrapper.setBackground(new Color(245, 245, 245));
         contentWrapper.add(mainContentPanel, BorderLayout.CENTER);
@@ -165,7 +155,6 @@ public class ManagerFrame extends JFrame {
         mainScrollPane.setBorder(null);
         mainScrollPane.getViewport().setBackground(new Color(245, 245, 245));
 
-        // Layout main frame
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
         add(mainScrollPane, BorderLayout.CENTER);
@@ -174,7 +163,6 @@ public class ManagerFrame extends JFrame {
     private void setupShortcut() {
         InputMap im = mainContentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = mainContentPanel.getActionMap();
-        // Ctrl + L -> Logout
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK), "logout");
         am.put("logout", new AbstractAction() {
             @Override
@@ -186,16 +174,13 @@ public class ManagerFrame extends JFrame {
         });
     }
 
-    // Add these fields at the top of your class
     private int currentIndex = 0;
     private final String[] panelNames = { "SUPERVISORS", "PRODUCT_LINES", "NOTES" };
 
-    // Corrected shortcut setup for Ctrl+Z
     private void setupCtrlZ() {
         InputMap im = mainContentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = mainContentPanel.getActionMap();
 
-        // Ctrl + Z -> Next panel
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "switchPanel");
         am.put("switchPanel", new AbstractAction() {
             @Override
@@ -207,7 +192,6 @@ public class ManagerFrame extends JFrame {
         });
     }
 
-    // Update button colors correctly
     private void updateButtonColors() {
         switch (panelNames[currentIndex]) {
             case "SUPERVISORS":

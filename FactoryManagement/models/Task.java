@@ -8,13 +8,13 @@ import FactoryManagement.models.enums.TaskStatus;
 public class Task {
     static int counter = 0;
     private int id;
-    private int productId; // Links to Product.Id
+    private int productId;
     private int quantity;
     private String clientName;
     private LocalDate startDate;
     private LocalDate deliveredDate;
     private TaskStatus status;
-    private int productLineId; // Links to ProductLine.Id
+    private int productLineId;
     private double percentage;
     private boolean delivered;
 
@@ -31,7 +31,7 @@ public class Task {
         this.productLineId = productLineId;
         this.percentage = 0.0;
         this.delivered = false;
-        // Try to add to product line if it exists
+
         FactoryManagement.services.ProductLineService.getProductLineById(productLineId)
                 .ifPresent(pl -> pl.addTask(this.getId()));
     }
@@ -50,11 +50,8 @@ public class Task {
         this.productLineId = productLineId;
         this.percentage = percentage;
         this.delivered = delivered;
-        // When loading from CSV we don't re-add to the product line queue
-        // (the product line's CSV already contains the queue)
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -142,7 +139,6 @@ public class Task {
         this.delivered = delivered;
     }
 
-    // CSV Serialization
     public String toCSV() {
         return id + "," + productId + "," + quantity + "," + clientName + "," + startDate + "," + deliveredDate + ","
                 + status + "," + productLineId + "," + percentage + "," + delivered;
