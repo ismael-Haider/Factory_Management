@@ -1,0 +1,43 @@
+2025-12-20 14:04:07 - the item's properties aren't realistic.
+2025/12/20 - 14:05:19 - the item's properties aren't realistic. 
+2025/12/20 - 14:06:17 - the item's properties aren't realistic.
+2025/12/20 - 14:07:58 - the item's properties aren't realistic. 
+2025/12/28 - 13:21:59 - Invalid number format in AddItemFrame: For input string: "12.2"
+2025/12/28 - 13:36:58 - Task (11) cannot be cancelled : in productLinePanel
+2025/12/28 - 13:58:09 - Invalid number format in AddTaskFrame: Insufficient quantity for item coton. Required: 8800.0, Available: 8000
+2025/12/28 - 14:03:21 - Invalid number format in AddTaskFrame: Insufficient quantity for item coton. Required: 8800.0, Available: 8000
+2025/12/28 - 14:10:22 - Invalid number format in AddTaskFrame: Insufficient quantity for item coton. Required: 8800.0, Available: 8000
+2025/12/28 - 14:15:58 - Insufficient quantity for item coton. Required: 8800.0, Available: 8000
+2025/12/28 - 14:29:46 - For input string: "paper"
+2025/12/28 - 14:29:50 - For input string: "paper"
+2026/01/02 - 01:35:25 - Insufficient quantity for item coton. Required: 50.0, Available: 0
+2026/01/02 - 01:41:24 - Insufficient quantity for item coton. Required: 50.0, Available: 0
+2026/01/02 - 01:52:08 - Insufficient quantity for item coton. Required: 100.0, Available: 0
+2026/01/02 - 01:56:46 - Insufficient quantity for item coton. Required: 26400.0, Available: 0
+2026/01/05 - 12:50:58 - Task (3) cannot be cancelled : in productLinePanel
+2026/01/05 - 13:38:01 - Task (8) cannot be cancelled : in productLinePanel
+2026/01/05 - 13:38:19 - Task (3) cannot be cancelled : in productLinePanel
+2026/01/23 - 13:02:05 - Invalid number format in AddItemFrame: For input string: ""
+2026/01/23 - 13:03:22 - Invalid number format in AddItemFrame: empty String
+2026/01/23 - 13:07:22 - Invalid number format in AddItemFrame: empty String
+2026/01/23 - 13:09:16 - Missing details when adding an item
+2026/01/23 - 13:09:25 - Invalid number format in AddItemFrame: empty String
+2026/01/23 - 13:09:31 - Invalid number format in AddItemFrame: For input string: "fd"
+2026/01/23 - 13:09:43 - Missing details when adding an item2026/01/24 - 14:45:19 - the efficiency must be number format
+2026/01/24 - 14:45:53 - the efficiency must be number format
+2026/01/24 - 14:51:05 - Empty name when adding Product Line
+2026/01/24 - 14:51:08 - Empty name when adding Product Line
+2026/01/24 - 14:51:17 - Efficiency must be number format
+2026/01/24 - 14:51:19 - Efficiency must be number format
+2026/01/24 - 14:56:17 - Invalid number format in AddItemFrame: For input string: "ngjh"
+2026/01/24 - 14:57:00 - the user (  ) already exists
+2026/01/24 - 14:57:56 - Empty name when adding Product Line
+2026/01/24 - 14:58:02 - Efficiency must be number format
+2026/01/24 - 14:58:03 - Efficiency must be number format
+2026/01/24 - 14:58:08 - Efficiency must be greater than zero
+2026/01/24 - 15:24:55 - Task (9) cannot be cancelled : in productLinePanel
+2026/01/24 - 15:26:13 - Empty username when adding Supervisor
+2026/01/24 - 15:26:17 - Empty username when adding Supervisor
+2026/01/24 - 15:26:22 - Empty password when adding Supervisor
+2026/01/24 - 13:11:45 - For input string: "ismael"
+2026/01/24 - 13:37:39 - Insufficient quantity for item coton. Required: 2500.0, Available: 0
