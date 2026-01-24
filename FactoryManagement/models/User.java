@@ -5,7 +5,7 @@ import java.util.Objects;
 import FactoryManagement.models.enums.UserRole;
 
 public class User {
-    static int counter = 0;
+    public static int counter = 0;
     private int id;
     private String userName;
     private String password;
@@ -18,6 +18,7 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.role = UserRole.SUPERVISOR;
+        this.remember = false;
     }
 
     public User(String userName, String password, UserRole role) {
@@ -31,7 +32,7 @@ public class User {
 
     // For loading from CSV
     public User(int id, String userName, String password, UserRole role, boolean remember) {
-        counter += 1;
+        counter=id;
         this.id = id;
         this.userName = userName;
         this.password = password;

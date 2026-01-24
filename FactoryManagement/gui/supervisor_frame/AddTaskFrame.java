@@ -27,7 +27,7 @@ public class AddTaskFrame extends JFrame {
 
     private TasksController controller;
     private Runnable onSuccess;
-    private Product selectedProduct;
+
 
     private HashMap<Integer, Integer> newProductItems_id_qty;
     private String newProductName;
@@ -35,7 +35,9 @@ public class AddTaskFrame extends JFrame {
     public AddTaskFrame(TasksController controller, Runnable onSuccess) {
         this.controller = controller;
         this.onSuccess = onSuccess;
-
+        ImageIcon icon = new ImageIcon(
+                getClass().getResource("../../res/icon.png"));
+        this.setIconImage(icon.getImage());
         setTitle("Add Task");
         setSize(450, 480);
         setLocationRelativeTo(null);
@@ -82,11 +84,10 @@ public class AddTaskFrame extends JFrame {
                 return;
             if ("New".equals(selected.getName())) {
                 newProductItems_id_qty = openNewProductDialog();
-                while (newProductItems_id_qty.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "You must add at least one item!");
+                if (newProductItems_id_qty==null||newProductItems_id_qty.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "You must add at least one item!","Error",JOptionPane.ERROR_MESSAGE);
                     newProductName = null;
-                    qtyField.setEditable(false);
-                    newProductItems_id_qty = openNewProductDialog();
+                    return;
                 }
                 qtyField.setEditable(true);
                 newProductName = askForProductName();
@@ -103,10 +104,6 @@ public class AddTaskFrame extends JFrame {
             productBox.repaint();
         });
 
-        if (controller.viewAllProductLines().isEmpty()) {
-            productBox.addItem(new Product("No Product Line", new HashMap<>()));
-            Product.counter--;
-        }
         lineBox = new JComboBox<>(controller.viewAllProductLines().toArray(new ProductLine[0]));
 
         qtyField = createField();
@@ -224,11 +221,16 @@ public class AddTaskFrame extends JFrame {
             }
 
             Product selected = (Product) productBox.getSelectedItem();
-
-            if (!controller.productNameExists(newProductName)) {
-                controller.addTask(newProductName, newProductItems_id_qty, quantity, client, start, end, pl.getId());
-            } else {
-                controller.addTask(selected.getId(), quantity, client, start, end, pl.getId());
+            if(selected.getName()!="New"){
+                if (!controller.productNameExists(newProductName)) {
+                    controller.addTask(newProductName, newProductItems_id_qty, quantity, client, start, end, pl.getId());
+                } else {
+                    controller.addTask(selected.getId(), quantity, client, start, end, pl.getId());
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "you must choose a product ", "error" , JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             onSuccess.run();

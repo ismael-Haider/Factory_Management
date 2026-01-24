@@ -7,7 +7,7 @@ public class Note {
     static int counter = 0;
     int id;
     int rating = 0;
-    String note = "";
+    public String note = "";
     String type;
     LocalDateTime ldt;
 

@@ -41,3 +41,19 @@
 2026/01/24 - 15:26:22 - Empty password when adding Supervisor
 2026/01/24 - 13:11:45 - For input string: "ismael"
 2026/01/24 - 13:37:39 - Insufficient quantity for item coton. Required: 2500.0, Available: 0
+2026/01/24 - 16:05:45 - No enum constant FactoryManagement.models.enums.UserRole.false
+2026/01/24 - 16:23:43 - For input string: ""
+2026/01/24 - 16:27:24 - Invalid number format in AddTaskFrame: Cannot invoke "FactoryManagement.models.ProductLine.getId()" because "pl" is null
+2026/01/24 - 17:33:44 - Quantity500 is less than Min Quantity 950: in AddItemFrame
+2026/01/24 - 17:33:59 - Quantity500 is less than Min Quantity 950: in AddItemFrame
+2026/01/24 - 17:55:06 - Insufficient quantity for item gold. Required: 15.0, Available: 5
+2026/01/24 - 17:59:00 - For input string: ""
+2026/01/24 - 17:59:26 - For input string: ""
+2026/01/24 - 17:59:30 - For input string: ""
+2026/01/24 - 18:22:42 - Insufficient quantity for item iron. Required: 1.09312E8, Available: 9700
+2026/01/24 - 18:23:35 - Invalid number format in AddTaskFrame: Cannot invoke "String.toLowerCase()" because "name" is null
+2026/01/24 - 18:23:37 - Insufficient quantity for item plastic. Required: 1.09312E8, Available: 54937
+2026/01/24 - 18:23:59 - Invalid number format in AddTaskFrame: Cannot invoke "String.toLowerCase()" because "name" is null
+2026/01/24 - 18:26:10 - Invalid number format in AddTaskFrame: Cannot invoke "String.toLowerCase()" because "name" is null
+2026/01/24 - 18:30:18 - Insufficient quantity for item plastic. Required: 6464000.0, Available: 54937
+2026/01/24 - 18:31:20 - Insufficient quantity for item paper. Required: 3.232E7, Available: 999820

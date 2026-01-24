@@ -18,7 +18,9 @@ public class Login extends JFrame {
 
     public Login(LoginController loginController) {
         this.loginController = loginController;
-
+        ImageIcon icon = new ImageIcon(
+                getClass().getResource("../res/icon.png"));
+        this.setIconImage(icon.getImage());
         setTitle("Factory Management System - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);

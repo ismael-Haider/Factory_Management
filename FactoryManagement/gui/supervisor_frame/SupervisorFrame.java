@@ -19,7 +19,7 @@ public class SupervisorFrame extends JFrame {
     private JPanel mainContentPanel;
     private final Color ACTIVE_COLOR = new Color(26, 188, 156);
     private final Color INACTIVE_COLOR = new Color(44, 62, 80);
-
+    private final Color HOVER_COLOR = new Color(22, 160, 133);
     private InvenManageController itemController;
     private TasksController tasksController;
     private InventoryPanel inventoryPanel;
@@ -37,6 +37,9 @@ public class SupervisorFrame extends JFrame {
         inventoryPanel = new InventoryPanel(itemController);
         tasksController = new TasksController();
         this.user = user;
+        ImageIcon icon = new ImageIcon(
+                getClass().getResource("../../res/icon.png"));
+        this.setIconImage(icon.getImage());
         initUI();
         initPanels();
         setActiveButton(manageInventoryBtn, manageTasksBtn);
@@ -77,6 +80,27 @@ public class SupervisorFrame extends JFrame {
                 break;
         }
     }
+
+    private void addHoverEffect(JButton button) {
+    button.addMouseListener(new java.awt.event.MouseAdapter() {
+
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent e) {
+            if (button.getBackground().equals(INACTIVE_COLOR)) {
+                button.setBackground(HOVER_COLOR);
+            }
+        }
+
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent e) {
+            if (button.getBackground().equals(HOVER_COLOR)) {
+                button.setBackground(INACTIVE_COLOR);
+            }
+        }
+    });
+}
+
+
 
     private void initUI() {
         setTitle("Supervisor Dashboard");
@@ -159,6 +183,9 @@ public class SupervisorFrame extends JFrame {
             setActiveButton(finishedProductsBtn, manageInventoryBtn, manageTasksBtn);
         });
 
+        addHoverEffect(manageInventoryBtn);
+    addHoverEffect(manageTasksBtn);
+    addHoverEffect(finishedProductsBtn);
         centerPanel.add(manageInventoryBtn);
         centerPanel.add(manageTasksBtn);
         centerPanel.add(finishedProductsBtn);
