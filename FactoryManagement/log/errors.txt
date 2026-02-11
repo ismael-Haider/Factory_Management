@@ -57,3 +57,5 @@
 2026/01/24 - 18:26:10 - Invalid number format in AddTaskFrame: Cannot invoke "String.toLowerCase()" because "name" is null
 2026/01/24 - 18:30:18 - Insufficient quantity for item plastic. Required: 6464000.0, Available: 54937
 2026/01/24 - 18:31:20 - Insufficient quantity for item paper. Required: 3.232E7, Available: 999820
+2026/01/24 - 18:54:17 - Task (12) cannot be cancelled : in productLinePanel
+2026/01/24 - 18:54:26 - Task (5) cannot be cancelled : in productLinePanel
